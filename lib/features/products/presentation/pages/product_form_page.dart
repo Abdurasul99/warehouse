@@ -484,10 +484,14 @@ class _FormBodyState extends ConsumerState<_FormBody> {
                         : ProductUnits.all.first,
                     decoration: InputDecoration(
                         labelText: context.l10n.products_unit_label),
+                    isExpanded: true,
                     items: ProductUnits.all
                         .map((u) => DropdownMenuItem<String>(
                               value: u,
-                              child: Text(u),
+                              child: Text(
+                                ProductUnits.label(u, locale),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ))
                         .toList(),
                     onChanged: (v) {

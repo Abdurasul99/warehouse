@@ -29,6 +29,41 @@ class ProductUnits {
     'quti',
     'komplekt',
   ];
+
+  static const Map<String, String> _uzLabels = {
+    'dona': 'dona (шт)',
+    'kg': 'kg (кг)',
+    'g': 'g (г)',
+    'l': 'l (л)',
+    'ml': 'ml (мл)',
+    'm': 'm (м)',
+    'cm': 'cm (см)',
+    'm2': 'm² (кв.м)',
+    'm3': 'm³ (куб.м)',
+    'pachka': 'pachka (пачка)',
+    'quti': 'quti (коробка)',
+    'komplekt': 'komplekt (комплект)',
+  };
+
+  static const Map<String, String> _ruLabels = {
+    'dona': 'штука',
+    'kg': 'кг',
+    'g': 'г',
+    'l': 'л',
+    'ml': 'мл',
+    'm': 'м',
+    'cm': 'см',
+    'm2': 'кв.м',
+    'm3': 'куб.м',
+    'pachka': 'пачка',
+    'quti': 'коробка',
+    'komplekt': 'комплект',
+  };
+
+  static String label(String code, String locale) {
+    final map = locale == 'ru' ? _ruLabels : _uzLabels;
+    return map[code] ?? code;
+  }
 }
 
 class AppStrings {
