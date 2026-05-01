@@ -308,6 +308,120 @@ abstract class AppLocalizations {
   /// **'AI Yordamchi'**
   String get dashboard_card_assistant;
 
+  /// No description provided for @analytics_section_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor holati'**
+  String get analytics_section_title;
+
+  /// No description provided for @analytics_health_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor sogʻligʻi'**
+  String get analytics_health_title;
+
+  /// No description provided for @analytics_health_ok.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yetarli'**
+  String get analytics_health_ok;
+
+  /// No description provided for @analytics_health_low.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kam'**
+  String get analytics_health_low;
+
+  /// No description provided for @analytics_health_critical.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tugagan'**
+  String get analytics_health_critical;
+
+  /// No description provided for @analytics_action_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Diqqat talab qiladi'**
+  String get analytics_action_title;
+
+  /// No description provided for @analytics_action_count.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta mahsulot toʻldirilishi kerak'**
+  String analytics_action_count(int count);
+
+  /// No description provided for @analytics_action_view.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roʻyxatni koʻrish'**
+  String get analytics_action_view;
+
+  /// No description provided for @analytics_action_clear.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi joyida — kritik tovarlar yoʻq'**
+  String get analytics_action_clear;
+
+  /// No description provided for @analytics_flow_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugungi oborot'**
+  String get analytics_flow_title;
+
+  /// No description provided for @analytics_flow_in.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kirim'**
+  String get analytics_flow_in;
+
+  /// No description provided for @analytics_flow_out.
+  ///
+  /// In uz, this message translates to:
+  /// **'Chiqim'**
+  String get analytics_flow_out;
+
+  /// No description provided for @analytics_flow_net.
+  ///
+  /// In uz, this message translates to:
+  /// **'Net'**
+  String get analytics_flow_net;
+
+  /// No description provided for @analytics_flow_fallback.
+  ///
+  /// In uz, this message translates to:
+  /// **'Soʻnggi faol kun: {date}'**
+  String analytics_flow_fallback(String date);
+
+  /// No description provided for @analytics_value_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor qiymati'**
+  String get analytics_value_title;
+
+  /// No description provided for @analytics_value_subtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'xarid narxida'**
+  String get analytics_value_subtitle;
+
+  /// No description provided for @analytics_reorder_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Birinchi navbatda toʻldirish'**
+  String get analytics_reorder_title;
+
+  /// No description provided for @analytics_reorder_empty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻldirish kerak boʻlgan tovar yoʻq'**
+  String get analytics_reorder_empty;
+
+  /// No description provided for @analytics_slow_movers_chip.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta tovar 30 kundan beri harakatsiz'**
+  String analytics_slow_movers_chip(int count);
+
   /// No description provided for @assistant_title.
   ///
   /// In uz, this message translates to:

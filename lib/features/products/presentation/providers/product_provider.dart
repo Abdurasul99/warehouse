@@ -81,6 +81,9 @@ class ProductFilterNotifier extends Notifier<ProductFilter> {
 
   void toggleLowStock() =>
       state = state.copyWith(lowStockOnly: !state.lowStockOnly);
+
+  void setLowStock(bool value) =>
+      state = state.copyWith(lowStockOnly: value);
 }
 
 final filteredProductsProvider = Provider<AsyncValue<List<ProductModel>>>((ref) {

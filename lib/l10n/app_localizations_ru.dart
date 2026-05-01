@@ -116,6 +116,69 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dashboard_card_assistant => 'AI Помощник';
 
   @override
+  String get analytics_section_title => 'Состояние склада';
+
+  @override
+  String get analytics_health_title => 'Здоровье склада';
+
+  @override
+  String get analytics_health_ok => 'В норме';
+
+  @override
+  String get analytics_health_low => 'Мало';
+
+  @override
+  String get analytics_health_critical => 'Закончились';
+
+  @override
+  String get analytics_action_title => 'Требуется внимание';
+
+  @override
+  String analytics_action_count(int count) {
+    return '$count товаров нужно пополнить';
+  }
+
+  @override
+  String get analytics_action_view => 'Открыть список';
+
+  @override
+  String get analytics_action_clear => 'Все в порядке — критичных товаров нет';
+
+  @override
+  String get analytics_flow_title => 'Оборот сегодня';
+
+  @override
+  String get analytics_flow_in => 'Приход';
+
+  @override
+  String get analytics_flow_out => 'Расход';
+
+  @override
+  String get analytics_flow_net => 'Чистый';
+
+  @override
+  String analytics_flow_fallback(String date) {
+    return 'Последний активный день: $date';
+  }
+
+  @override
+  String get analytics_value_title => 'Стоимость склада';
+
+  @override
+  String get analytics_value_subtitle => 'по закупочной цене';
+
+  @override
+  String get analytics_reorder_title => 'Пополнить в первую очередь';
+
+  @override
+  String get analytics_reorder_empty => 'Нет товаров для пополнения';
+
+  @override
+  String analytics_slow_movers_chip(int count) {
+    return '$count товаров без движения 30+ дней';
+  }
+
+  @override
   String get assistant_title => 'Помощник склада';
 
   @override

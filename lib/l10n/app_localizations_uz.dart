@@ -116,6 +116,69 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dashboard_card_assistant => 'AI Yordamchi';
 
   @override
+  String get analytics_section_title => 'Ombor holati';
+
+  @override
+  String get analytics_health_title => 'Ombor sogʻligʻi';
+
+  @override
+  String get analytics_health_ok => 'Yetarli';
+
+  @override
+  String get analytics_health_low => 'Kam';
+
+  @override
+  String get analytics_health_critical => 'Tugagan';
+
+  @override
+  String get analytics_action_title => 'Diqqat talab qiladi';
+
+  @override
+  String analytics_action_count(int count) {
+    return '$count ta mahsulot toʻldirilishi kerak';
+  }
+
+  @override
+  String get analytics_action_view => 'Roʻyxatni koʻrish';
+
+  @override
+  String get analytics_action_clear => 'Hammasi joyida — kritik tovarlar yoʻq';
+
+  @override
+  String get analytics_flow_title => 'Bugungi oborot';
+
+  @override
+  String get analytics_flow_in => 'Kirim';
+
+  @override
+  String get analytics_flow_out => 'Chiqim';
+
+  @override
+  String get analytics_flow_net => 'Net';
+
+  @override
+  String analytics_flow_fallback(String date) {
+    return 'Soʻnggi faol kun: $date';
+  }
+
+  @override
+  String get analytics_value_title => 'Ombor qiymati';
+
+  @override
+  String get analytics_value_subtitle => 'xarid narxida';
+
+  @override
+  String get analytics_reorder_title => 'Birinchi navbatda toʻldirish';
+
+  @override
+  String get analytics_reorder_empty => 'Toʻldirish kerak boʻlgan tovar yoʻq';
+
+  @override
+  String analytics_slow_movers_chip(int count) {
+    return '$count ta tovar 30 kundan beri harakatsiz';
+  }
+
+  @override
   String get assistant_title => 'Ombor yordamchisi';
 
   @override

@@ -9,8 +9,14 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/logout_action_button.dart';
+import '../../../products/presentation/providers/product_provider.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/dashboard_provider.dart';
+import '../widgets/action_required_banner_widget.dart';
 import '../widgets/dashboard_card_widget.dart';
+import '../widgets/flow_value_row_widget.dart';
+import '../widgets/reorder_preview_widget.dart';
+import '../widgets/stock_health_pulse_widget.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -19,6 +25,7 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final statsAsync = ref.watch(dashboardStatsProvider);
+    final analyticsAsync = ref.watch(analyticsSummaryProvider);
     final user = authState.maybeWhen(data: (u) => u, orElse: () => null);
 
     return Scaffold(
@@ -34,12 +41,14 @@ class DashboardPage extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.refresh(dashboardStatsProvider.future),
+        onRefresh: () async {
+          ref.invalidate(analyticsSummaryProvider);
+          ref.invalidate(dashboardStatsProvider);
+          await ref.read(dashboardStatsProvider.future);
+        },
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: _Greeting(userName: user?.name),
-            ),
+            SliverToBoxAdapter(child: _Greeting(userName: user?.name)),
             SliverToBoxAdapter(
               child: statsAsync.when(
                 data: (stats) => _StatsCard(stats: stats),
@@ -49,8 +58,59 @@ class DashboardPage extends ConsumerWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppDim.paddingM, AppDim.paddingL, AppDim.paddingM, AppDim.paddingS),
+              padding: const EdgeInsets.fromLTRB(AppDim.paddingM,
+                  AppDim.paddingL, AppDim.paddingM, AppDim.paddingS),
+              sliver: SliverToBoxAdapter(
+                child: Text(
+                  context.l10n.analytics_section_title,
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textSecondary,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: analyticsAsync.when(
+                data: (a) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppDim.paddingM),
+                  child: Column(
+                    children: [
+                      StockHealthPulseWidget(
+                        health: a.health,
+                        slowMoverCount: a.slowMoverCount,
+                      ),
+                      const SizedBox(height: AppDim.paddingM),
+                      ActionRequiredBannerWidget(
+                        count: a.criticalItems.length,
+                        onTap: () {
+                          ref
+                              .read(productFilterProvider.notifier)
+                              .setLowStock(true);
+                          context.pushNamed(AppRoutes.productList);
+                        },
+                      ),
+                      const SizedBox(height: AppDim.paddingM),
+                      FlowValueRowWidget(
+                        flow: a.todayFlow,
+                        inventoryValue: a.inventoryValue,
+                      ),
+                      const SizedBox(height: AppDim.paddingM),
+                      ReorderPreviewWidget(items: a.reorderQueue),
+                    ],
+                  ),
+                ),
+                loading: () => const Padding(
+                  padding: EdgeInsets.all(AppDim.paddingM),
+                  child: SizedBox(height: 80, child: LoadingWidget()),
+                ),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(AppDim.paddingM,
+                  AppDim.paddingL, AppDim.paddingM, AppDim.paddingS),
               sliver: SliverToBoxAdapter(
                 child: Text(
                   context.l10n.dashboard_subtitle,
@@ -62,10 +122,11 @@ class DashboardPage extends ConsumerWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppDim.paddingM, 0, AppDim.paddingM, AppDim.paddingL),
+              padding: const EdgeInsets.fromLTRB(AppDim.paddingM, 0,
+                  AppDim.paddingM, AppDim.paddingL),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: AppDim.paddingM,
                   crossAxisSpacing: AppDim.paddingM,
