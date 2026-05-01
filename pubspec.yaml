@@ -25,6 +25,7 @@ dependencies:
   barcode_widget: ^2.0.4
   image_picker: ^1.1.2
   path_provider: ^2.1.5
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

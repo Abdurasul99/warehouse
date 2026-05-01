@@ -302,6 +302,60 @@ abstract class AppLocalizations {
   /// **'Sozlamalar'**
   String get dashboard_card_settings;
 
+  /// No description provided for @dashboard_card_assistant.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI Yordamchi'**
+  String get dashboard_card_assistant;
+
+  /// No description provided for @assistant_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor yordamchisi'**
+  String get assistant_title;
+
+  /// No description provided for @assistant_clear.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatni tozalash'**
+  String get assistant_clear;
+
+  /// No description provided for @assistant_input_hint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Savolingizni yozing...'**
+  String get assistant_input_hint;
+
+  /// No description provided for @assistant_welcome_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sizga qanday yordam berishim mumkin?'**
+  String get assistant_welcome_title;
+
+  /// No description provided for @assistant_welcome_subtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor holati, mahsulotlar va biznes haqida savol bering. Maslahatlar berish uchun real maʼlumotlardan foydalanaman.'**
+  String get assistant_welcome_subtitle;
+
+  /// No description provided for @assistant_suggestion_low_stock.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaysi mahsulotlar tugayapti?'**
+  String get assistant_suggestion_low_stock;
+
+  /// No description provided for @assistant_suggestion_recommendations.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qanday tavsiyalaringiz bor?'**
+  String get assistant_suggestion_recommendations;
+
+  /// No description provided for @assistant_suggestion_top_categories.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eng katta kategoriyalarim qaysilar?'**
+  String get assistant_suggestion_top_categories;
+
   /// No description provided for @dashboard_stat_total.
   ///
   /// In uz, this message translates to:

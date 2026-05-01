@@ -11,6 +11,24 @@ class AppRoutes {
   static const String movements = 'movement-history';
   static const String settings = 'settings';
   static const String barcodeScanner = 'barcode-scanner';
+  static const String assistant = 'assistant';
+}
+
+class ProductUnits {
+  static const List<String> all = [
+    'dona',
+    'kg',
+    'g',
+    'l',
+    'ml',
+    'm',
+    'cm',
+    'm2',
+    'm3',
+    'pachka',
+    'quti',
+    'komplekt',
+  ];
 }
 
 class AppStrings {

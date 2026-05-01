@@ -113,6 +113,36 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dashboard_card_settings => 'Sozlamalar';
 
   @override
+  String get dashboard_card_assistant => 'AI Yordamchi';
+
+  @override
+  String get assistant_title => 'Ombor yordamchisi';
+
+  @override
+  String get assistant_clear => 'Suhbatni tozalash';
+
+  @override
+  String get assistant_input_hint => 'Savolingizni yozing...';
+
+  @override
+  String get assistant_welcome_title => 'Sizga qanday yordam berishim mumkin?';
+
+  @override
+  String get assistant_welcome_subtitle =>
+      'Ombor holati, mahsulotlar va biznes haqida savol bering. Maslahatlar berish uchun real maʼlumotlardan foydalanaman.';
+
+  @override
+  String get assistant_suggestion_low_stock => 'Qaysi mahsulotlar tugayapti?';
+
+  @override
+  String get assistant_suggestion_recommendations =>
+      'Qanday tavsiyalaringiz bor?';
+
+  @override
+  String get assistant_suggestion_top_categories =>
+      'Eng katta kategoriyalarim qaysilar?';
+
+  @override
   String get dashboard_stat_total => 'Jami';
 
   @override

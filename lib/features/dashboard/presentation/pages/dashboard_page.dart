@@ -158,6 +158,12 @@ class DashboardPage extends ConsumerWidget {
         onTap: () => context.goNamed(AppRoutes.movements),
       ),
       DashboardCard(
+        icon: Icons.auto_awesome,
+        title: context.l10n.dashboard_card_assistant,
+        color: AppColors.movementIn,
+        onTap: () => context.goNamed(AppRoutes.assistant),
+      ),
+      DashboardCard(
         icon: Icons.settings_outlined,
         title: context.l10n.dashboard_card_settings,
         color: AppColors.textSecondary,

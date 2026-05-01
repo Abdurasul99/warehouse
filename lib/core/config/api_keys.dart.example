@@ -1,0 +1,5 @@
+/// Copy this file to `api_keys.dart` and fill in your own keys.
+/// `api_keys.dart` is gitignored — never commit your actual keys.
+class ApiKeys {
+  static const String deepseek = 'YOUR_DEEPSEEK_API_KEY_HERE';
+}

@@ -478,13 +478,24 @@ class _FormBodyState extends ConsumerState<_FormBody> {
                 ),
                 const SizedBox(width: AppDim.paddingM),
                 Expanded(
-                  child: TextFormField(
-                    initialValue: formState.unit,
+                  child: DropdownButtonFormField<String>(
+                    initialValue: ProductUnits.all.contains(formState.unit)
+                        ? formState.unit
+                        : ProductUnits.all.first,
                     decoration: InputDecoration(
                         labelText: context.l10n.products_unit_label),
-                    onChanged: (v) => ref
-                        .read(productFormProvider(widget.productId).notifier)
-                        .update((s) => s.copyWith(unit: v)),
+                    items: ProductUnits.all
+                        .map((u) => DropdownMenuItem<String>(
+                              value: u,
+                              child: Text(u),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      ref
+                          .read(productFormProvider(widget.productId).notifier)
+                          .update((s) => s.copyWith(unit: v));
+                    },
                   ),
                 ),
               ],

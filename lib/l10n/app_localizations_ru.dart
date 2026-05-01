@@ -113,6 +113,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dashboard_card_settings => 'Настройки';
 
   @override
+  String get dashboard_card_assistant => 'AI Помощник';
+
+  @override
+  String get assistant_title => 'Помощник склада';
+
+  @override
+  String get assistant_clear => 'Очистить чат';
+
+  @override
+  String get assistant_input_hint => 'Введите ваш вопрос...';
+
+  @override
+  String get assistant_welcome_title => 'Чем могу помочь?';
+
+  @override
+  String get assistant_welcome_subtitle =>
+      'Спрашивайте о состоянии склада, товарах и бизнесе. Использую реальные данные для рекомендаций.';
+
+  @override
+  String get assistant_suggestion_low_stock => 'Какие товары заканчиваются?';
+
+  @override
+  String get assistant_suggestion_recommendations =>
+      'Какие у вас рекомендации?';
+
+  @override
+  String get assistant_suggestion_top_categories =>
+      'Какие у меня самые большие категории?';
+
+  @override
   String get dashboard_stat_total => 'Всего';
 
   @override

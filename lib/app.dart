@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sales_system_warehouse_mobile/l10n/app_localizations.dart';
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
+import 'features/assistant/presentation/pages/assistant_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
@@ -114,6 +115,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: AppRoutes.settings,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: SettingsPage()),
+          ),
+          GoRoute(
+            path: '/assistant',
+            name: AppRoutes.assistant,
+            pageBuilder: (context, state) =>
+                const MaterialPage(child: AssistantPage()),
           ),
         ],
       ),
