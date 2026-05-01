@@ -212,6 +212,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String get products_error_sku_duplicate => 'Такой SKU уже существует';
 
   @override
+  String get products_barcode_generate => 'Создать штрихкод';
+
+  @override
+  String get products_barcode_scan => 'Сканировать штрихкод';
+
+  @override
+  String get products_category_add => 'Новая категория';
+
+  @override
+  String get products_category_name_uz => 'Название (узбекский)';
+
+  @override
+  String get products_category_name_ru => 'Название (русский)';
+
+  @override
+  String get products_category_created => 'Категория добавлена';
+
+  @override
+  String get products_error_category_name_required => 'Название обязательно';
+
+  @override
+  String get products_photo_label => 'Фото товара';
+
+  @override
+  String get products_photo_take => 'Снять на камеру';
+
+  @override
+  String get products_photo_pick => 'Выбрать из галереи';
+
+  @override
+  String get products_photo_remove => 'Удалить';
+
+  @override
+  String get products_photo_required_for_new =>
+      'Фото обязательно для нового товара';
+
+  @override
   String get stock_in_title => 'Приход';
 
   @override

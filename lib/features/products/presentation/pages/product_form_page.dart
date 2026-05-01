@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +10,9 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../shared/models/category_model.dart';
 import '../../../../shared/services/barcode_service.dart';
+import '../../../../shared/services/photo_service.dart';
 import '../providers/product_form_provider.dart';
 import '../providers/product_provider.dart';
 
@@ -98,6 +103,7 @@ class _FormBody extends ConsumerStatefulWidget {
 
 class _FormBodyState extends ConsumerState<_FormBody> {
   final _formKey = GlobalKey<FormState>();
+  final _photoService = PhotoService();
   late final _nameCtrl = TextEditingController(text: widget.formState.name);
   late final _skuCtrl = TextEditingController(text: widget.formState.sku);
   late final _barcodeCtrl =
@@ -151,6 +157,156 @@ class _FormBodyState extends ConsumerState<_FormBody> {
     await ref.read(productFormProvider(widget.productId).notifier).submit();
   }
 
+  void _generateBarcode() {
+    final products = ref.read(productListProvider).valueOrNull ?? const [];
+    final code = BarcodeScannerService.generateUniqueEan13(products);
+    setState(() => _barcodeCtrl.text = code);
+    ref
+        .read(productFormProvider(widget.productId).notifier)
+        .update((s) => s.copyWith(barcode: code));
+  }
+
+  Future<void> _scanBarcode() async {
+    final code = await BarcodeScannerService().scanBarcode(context);
+    if (code != null) {
+      setState(() => _barcodeCtrl.text = code);
+      ref
+          .read(productFormProvider(widget.productId).notifier)
+          .update((s) => s.copyWith(barcode: code));
+    }
+  }
+
+  Future<void> _openCreateCategoryDialog() async {
+    final uzCtrl = TextEditingController();
+    final ruCtrl = TextEditingController();
+    final dialogKey = GlobalKey<FormState>();
+    final created = await showDialog<CategoryModel>(
+      context: context,
+      builder: (dctx) => AlertDialog(
+        title: Text(dctx.l10n.products_category_add),
+        content: Form(
+          key: dialogKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: uzCtrl,
+                decoration: InputDecoration(
+                  labelText: dctx.l10n.products_category_name_uz,
+                ),
+                validator: (v) => Validators.required(
+                  v,
+                  message: dctx.l10n.products_error_category_name_required,
+                ),
+              ),
+              const SizedBox(height: AppDim.paddingM),
+              TextFormField(
+                controller: ruCtrl,
+                decoration: InputDecoration(
+                  labelText: dctx.l10n.products_category_name_ru,
+                ),
+                validator: (v) => Validators.required(
+                  v,
+                  message: dctx.l10n.products_error_category_name_required,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dctx),
+            child: Text(dctx.l10n.btn_cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (!dialogKey.currentState!.validate()) return;
+              final cat = await ref
+                  .read(categoryListProvider.notifier)
+                  .createCategory(
+                    nameUz: uzCtrl.text,
+                    nameRu: ruCtrl.text,
+                  );
+              if (dctx.mounted) Navigator.pop(dctx, cat);
+            },
+            child: Text(dctx.l10n.btn_save),
+          ),
+        ],
+      ),
+    );
+    uzCtrl.dispose();
+    ruCtrl.dispose();
+    if (!mounted) return;
+    if (created != null) {
+      ref
+          .read(productFormProvider(widget.productId).notifier)
+          .update((s) => s.copyWith(categoryId: created.id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.products_category_created)),
+      );
+    }
+  }
+
+  Future<void> _showPhotoPicker() async {
+    final hasPhoto = ref
+        .read(productFormProvider(widget.productId))
+        .photoPath
+        .isNotEmpty;
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetCtx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(sheetCtx.l10n.products_photo_take),
+              onTap: () async {
+                Navigator.pop(sheetCtx);
+                await _pickPhoto(camera: true);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(sheetCtx.l10n.products_photo_pick),
+              onTap: () async {
+                Navigator.pop(sheetCtx);
+                await _pickPhoto(camera: false);
+              },
+            ),
+            if (hasPhoto)
+              ListTile(
+                leading: const Icon(Icons.delete_outline,
+                    color: AppColors.statusCritical),
+                title: Text(
+                  sheetCtx.l10n.products_photo_remove,
+                  style: const TextStyle(color: AppColors.statusCritical),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  ref
+                      .read(productFormProvider(widget.productId).notifier)
+                      .update((s) => s.copyWith(photoPath: ''));
+                  setState(() {});
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickPhoto({required bool camera}) async {
+    final path = camera
+        ? await _photoService.pickFromCamera()
+        : await _photoService.pickFromGallery();
+    if (path == null || !mounted) return;
+    ref
+        .read(productFormProvider(widget.productId).notifier)
+        .update((s) => s.copyWith(photoPath: path));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(productFormProvider(widget.productId));
@@ -166,6 +322,13 @@ class _FormBodyState extends ConsumerState<_FormBody> {
           children: [
             if (formState.errorMessage != null)
               _ErrorBanner(message: formState.errorMessage!),
+            _SectionLabel(context.l10n.products_photo_label),
+            const SizedBox(height: AppDim.paddingS),
+            _PhotoPicker(
+              photoPath: formState.photoPath,
+              onTap: _showPhotoPicker,
+            ),
+            const SizedBox(height: AppDim.paddingL),
             _SectionLabel(context.l10n.products_section_basic),
             const SizedBox(height: AppDim.paddingS),
             TextFormField(
@@ -177,59 +340,88 @@ class _FormBodyState extends ConsumerState<_FormBody> {
             ),
             const SizedBox(height: AppDim.paddingM),
             categoriesAsync.when(
-              data: (cats) => DropdownButtonFormField<String>(
-                initialValue:
-                    formState.categoryId.isEmpty ? null : formState.categoryId,
-                decoration: InputDecoration(
-                    labelText: context.l10n.products_category_label),
-                hint: Text(context.l10n.products_category_hint),
-                items: cats
-                    .map((c) => DropdownMenuItem(
-                          value: c.id,
-                          child: Text(c.localizedName(locale)),
-                        ))
-                    .toList(),
-                onChanged: (v) => ref
-                    .read(productFormProvider(widget.productId).notifier)
-                    .update((s) => s.copyWith(categoryId: v ?? '')),
-                validator: (v) => v == null || v.isEmpty
-                    ? context.l10n.products_error_category_required
-                    : null,
+              data: (cats) => Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: formState.categoryId.isEmpty
+                          ? null
+                          : formState.categoryId,
+                      decoration: InputDecoration(
+                          labelText: context.l10n.products_category_label),
+                      hint: Text(context.l10n.products_category_hint),
+                      items: cats
+                          .map((c) => DropdownMenuItem<String>(
+                                value: c.id,
+                                child: Text(c.localizedName(locale)),
+                              ))
+                          .toList(),
+                      onChanged: (v) => ref
+                          .read(productFormProvider(widget.productId).notifier)
+                          .update((s) => s.copyWith(categoryId: v ?? '')),
+                      validator: (v) => v == null || v.isEmpty
+                          ? context.l10n.products_error_category_required
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: AppDim.paddingS),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: IconButton.filledTonal(
+                      tooltip: context.l10n.products_category_add,
+                      icon: const Icon(Icons.add),
+                      onPressed: _openCreateCategoryDialog,
+                    ),
+                  ),
+                ],
               ),
               loading: () => const CircularProgressIndicator(),
               error: (_, __) => const SizedBox.shrink(),
             ),
             const SizedBox(height: AppDim.paddingM),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _skuCtrl,
-                    decoration: const InputDecoration(labelText: 'SKU'),
-                    validator: (v) =>
-                        Validators.required(v, message: 'SKU majburiy') ??
-                        Validators.sku(v),
-                  ),
-                ),
-                const SizedBox(width: AppDim.paddingM),
-                Expanded(
-                  child: TextFormField(
-                    controller: _barcodeCtrl,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.products_barcode_label,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.qr_code_scanner),
-                        onPressed: () async {
-                          final code = await BarcodeScannerService()
-                              .scanBarcode(context);
-                          if (code != null) _barcodeCtrl.text = code;
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _skuCtrl,
+              decoration: const InputDecoration(labelText: 'SKU'),
+              validator: (v) =>
+                  Validators.required(v, message: 'SKU majburiy') ??
+                  Validators.sku(v),
             ),
+            const SizedBox(height: AppDim.paddingM),
+            TextFormField(
+              controller: _barcodeCtrl,
+              decoration: InputDecoration(
+                labelText: context.l10n.products_barcode_label,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: context.l10n.products_barcode_generate,
+                      icon: const Icon(Icons.auto_awesome),
+                      onPressed: _generateBarcode,
+                    ),
+                    IconButton(
+                      tooltip: context.l10n.products_barcode_scan,
+                      icon: const Icon(Icons.qr_code_scanner),
+                      onPressed: _scanBarcode,
+                    ),
+                  ],
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            if (_barcodeCtrl.text.trim().length == 13) ...[
+              const SizedBox(height: AppDim.paddingS),
+              SizedBox(
+                height: 70,
+                child: BarcodeWidget(
+                  barcode: Barcode.ean13(),
+                  data: _barcodeCtrl.text.trim(),
+                  drawText: true,
+                  errorBuilder: (_, __) => const SizedBox.shrink(),
+                ),
+              ),
+            ],
             const SizedBox(height: AppDim.paddingL),
             _SectionLabel(context.l10n.products_section_pricing),
             const SizedBox(height: AppDim.paddingS),
@@ -321,6 +513,70 @@ class _FormBodyState extends ConsumerState<_FormBody> {
             const SizedBox(height: AppDim.paddingM),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PhotoPicker extends StatelessWidget {
+  final String photoPath;
+  final VoidCallback onTap;
+  const _PhotoPicker({required this.photoPath, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = photoPath.isNotEmpty;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDim.radiusM),
+      child: Container(
+        height: 160,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(AppDim.radiusM),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.4),
+            width: 1.2,
+            style: hasPhoto ? BorderStyle.solid : BorderStyle.solid,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        alignment: Alignment.center,
+        child: hasPhoto
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.file(File(photoPath), fit: BoxFit.cover),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.edit,
+                          color: Colors.white, size: 18),
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add_a_photo_outlined,
+                      size: 40, color: AppColors.primary),
+                  const SizedBox(height: AppDim.paddingS),
+                  Text(
+                    context.l10n.products_photo_label,
+                    style: AppTextStyles.body2.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

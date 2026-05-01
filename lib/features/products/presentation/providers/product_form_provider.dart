@@ -15,6 +15,7 @@ class ProductFormState {
   final String sellingPrice;
   final String currentQuantity;
   final String minQuantity;
+  final String photoPath;
   final bool isSubmitting;
   final String? errorMessage;
   final bool success;
@@ -31,6 +32,7 @@ class ProductFormState {
     this.sellingPrice = '',
     this.currentQuantity = '0',
     this.minQuantity = '10',
+    this.photoPath = '',
     this.isSubmitting = false,
     this.errorMessage,
     this.success = false,
@@ -48,6 +50,7 @@ class ProductFormState {
     String? sellingPrice,
     String? currentQuantity,
     String? minQuantity,
+    String? photoPath,
     bool? isSubmitting,
     String? errorMessage,
     bool clearError = false,
@@ -65,6 +68,7 @@ class ProductFormState {
         sellingPrice: sellingPrice ?? this.sellingPrice,
         currentQuantity: currentQuantity ?? this.currentQuantity,
         minQuantity: minQuantity ?? this.minQuantity,
+        photoPath: photoPath ?? this.photoPath,
         isSubmitting: isSubmitting ?? this.isSubmitting,
         errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
         success: success ?? this.success,
@@ -82,6 +86,7 @@ class ProductFormState {
         sellingPrice: p.sellingPrice.toStringAsFixed(0),
         currentQuantity: p.currentQuantity.toString(),
         minQuantity: p.minQuantity.toString(),
+        photoPath: p.imagePlaceholder ?? '',
       );
 }
 
@@ -119,6 +124,14 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
       state = state.copyWith(errorMessage: 'SKU majburiy');
       return false;
     }
+    final isNew = state.id == null;
+    final qty = int.tryParse(state.currentQuantity) ?? 0;
+    if (isNew && qty == 0 && state.photoPath.isEmpty) {
+      state = state.copyWith(
+        errorMessage: 'Yangi mahsulot uchun fotosurat majburiy',
+      );
+      return false;
+    }
 
     final repo = ref.read(productRepositoryProvider);
     final isUnique = await repo.isSkuUnique(state.sku.trim(), excludeId: state.id);
@@ -143,6 +156,7 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
       sellingPrice: double.tryParse(state.sellingPrice) ?? 0,
       currentQuantity: int.tryParse(state.currentQuantity) ?? 0,
       minQuantity: int.tryParse(state.minQuantity) ?? 10,
+      imagePlaceholder: state.photoPath.isEmpty ? null : state.photoPath,
       createdAt: existingProduct?.createdAt ?? now,
       updatedAt: now,
     );

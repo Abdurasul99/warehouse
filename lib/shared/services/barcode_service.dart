@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -41,6 +43,42 @@ class BarcodeScannerService {
     return products
         .where((product) => normalizeBarcode(product.barcode) == normalized)
         .firstOrNull;
+  }
+
+  static String generateEan13({String prefix = '200', Random? rng}) {
+    final random = rng ?? Random();
+    final buffer = StringBuffer(prefix);
+    final remaining = 12 - prefix.length;
+    for (var i = 0; i < remaining; i++) {
+      buffer.write(random.nextInt(10));
+    }
+    final first12 = buffer.toString();
+    return first12 + _ean13Checksum(first12);
+  }
+
+  static String _ean13Checksum(String first12) {
+    var sum = 0;
+    for (var i = 0; i < first12.length; i++) {
+      final digit = int.parse(first12[i]);
+      sum += i.isEven ? digit : digit * 3;
+    }
+    final check = (10 - sum % 10) % 10;
+    return check.toString();
+  }
+
+  static String generateUniqueEan13(
+    Iterable<ProductModel> existing, {
+    int maxAttempts = 10,
+    Random? rng,
+  }) {
+    String candidate = generateEan13(rng: rng);
+    for (var i = 0; i < maxAttempts; i++) {
+      if (findProductByBarcode(existing, candidate) == null) {
+        return candidate;
+      }
+      candidate = generateEan13(rng: rng);
+    }
+    return candidate;
   }
 }
 

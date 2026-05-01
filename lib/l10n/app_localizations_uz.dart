@@ -212,6 +212,43 @@ class AppLocalizationsUz extends AppLocalizations {
   String get products_error_sku_duplicate => 'Bu SKU allaqachon mavjud';
 
   @override
+  String get products_barcode_generate => 'Barkod yaratish';
+
+  @override
+  String get products_barcode_scan => 'Barkodni skanerlash';
+
+  @override
+  String get products_category_add => 'Yangi kategoriya';
+
+  @override
+  String get products_category_name_uz => 'Nomi (o\'zbekcha)';
+
+  @override
+  String get products_category_name_ru => 'Nomi (ruscha)';
+
+  @override
+  String get products_category_created => 'Kategoriya qo\'shildi';
+
+  @override
+  String get products_error_category_name_required => 'Nom majburiy';
+
+  @override
+  String get products_photo_label => 'Mahsulot fotosurati';
+
+  @override
+  String get products_photo_take => 'Kameradan olish';
+
+  @override
+  String get products_photo_pick => 'Galereyadan tanlash';
+
+  @override
+  String get products_photo_remove => 'O\'chirish';
+
+  @override
+  String get products_photo_required_for_new =>
+      'Yangi mahsulot uchun fotosurat majburiy';
+
+  @override
   String get stock_in_title => 'Kirim';
 
   @override

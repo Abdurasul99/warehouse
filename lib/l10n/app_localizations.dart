@@ -500,6 +500,78 @@ abstract class AppLocalizations {
   /// **'Bu SKU allaqachon mavjud'**
   String get products_error_sku_duplicate;
 
+  /// No description provided for @products_barcode_generate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Barkod yaratish'**
+  String get products_barcode_generate;
+
+  /// No description provided for @products_barcode_scan.
+  ///
+  /// In uz, this message translates to:
+  /// **'Barkodni skanerlash'**
+  String get products_barcode_scan;
+
+  /// No description provided for @products_category_add.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi kategoriya'**
+  String get products_category_add;
+
+  /// No description provided for @products_category_name_uz.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomi (o\'zbekcha)'**
+  String get products_category_name_uz;
+
+  /// No description provided for @products_category_name_ru.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomi (ruscha)'**
+  String get products_category_name_ru;
+
+  /// No description provided for @products_category_created.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kategoriya qo\'shildi'**
+  String get products_category_created;
+
+  /// No description provided for @products_error_category_name_required.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nom majburiy'**
+  String get products_error_category_name_required;
+
+  /// No description provided for @products_photo_label.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mahsulot fotosurati'**
+  String get products_photo_label;
+
+  /// No description provided for @products_photo_take.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kameradan olish'**
+  String get products_photo_take;
+
+  /// No description provided for @products_photo_pick.
+  ///
+  /// In uz, this message translates to:
+  /// **'Galereyadan tanlash'**
+  String get products_photo_pick;
+
+  /// No description provided for @products_photo_remove.
+  ///
+  /// In uz, this message translates to:
+  /// **'O\'chirish'**
+  String get products_photo_remove;
+
+  /// No description provided for @products_photo_required_for_new.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi mahsulot uchun fotosurat majburiy'**
+  String get products_photo_required_for_new;
+
   /// No description provided for @stock_in_title.
   ///
   /// In uz, this message translates to:

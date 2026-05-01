@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/category_model.dart';
 import '../../../../shared/models/product_model.dart';
-import '../../../../shared/mock_data/mock_database.dart';
+import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
+import '../../domain/repositories/category_repository.dart';
 import '../../domain/repositories/product_repository.dart';
 
 final productRepositoryProvider = Provider<ProductRepository>(
@@ -110,9 +111,44 @@ final filteredProductsProvider = Provider<AsyncValue<List<ProductModel>>>((ref) 
   });
 });
 
-final categoryListProvider = FutureProvider<List<CategoryModel>>((ref) async {
-  return List.from(MockDatabase().categories);
-});
+final categoryRepositoryProvider = Provider<CategoryRepository>(
+  (_) => CategoryRepositoryImpl(),
+);
+
+final categoryListProvider =
+    AsyncNotifierProvider<CategoryListNotifier, List<CategoryModel>>(
+  CategoryListNotifier.new,
+);
+
+class CategoryListNotifier extends AsyncNotifier<List<CategoryModel>> {
+  @override
+  Future<List<CategoryModel>> build() {
+    return ref.read(categoryRepositoryProvider).getAll();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+      () => ref.read(categoryRepositoryProvider).getAll(),
+    );
+  }
+
+  Future<CategoryModel> createCategory({
+    required String nameUz,
+    required String nameRu,
+  }) async {
+    final repo = ref.read(categoryRepositoryProvider);
+    final model = CategoryModel(
+      id: 'cat_${DateTime.now().millisecondsSinceEpoch}',
+      nameUz: nameUz.trim(),
+      nameRu: nameRu.trim(),
+    );
+    final created = await repo.create(model);
+    final current = state.valueOrNull ?? const <CategoryModel>[];
+    state = AsyncValue.data([...current, created]);
+    return created;
+  }
+}
 
 final productDetailProvider =
     FutureProvider.family<ProductModel?, String>((ref, id) async {

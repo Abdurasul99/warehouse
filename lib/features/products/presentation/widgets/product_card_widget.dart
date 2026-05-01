@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -36,7 +38,7 @@ class ProductCard extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  _ProductIcon(categoryId: product.categoryId),
+                  _ProductThumbnail(product: product),
                   const SizedBox(width: AppDim.paddingM),
                   Expanded(
                     child: Column(
@@ -131,11 +133,11 @@ class _InfoItem extends StatelessWidget {
   }
 }
 
-class _ProductIcon extends StatelessWidget {
-  final String categoryId;
-  const _ProductIcon({required this.categoryId});
+class _ProductThumbnail extends StatelessWidget {
+  final ProductModel product;
+  const _ProductThumbnail({required this.product});
 
-  IconData get _icon {
+  IconData _iconForCategory(String categoryId) {
     switch (categoryId) {
       case 'cat_01': return Icons.carpenter;
       case 'cat_02': return Icons.hardware;
@@ -155,6 +157,10 @@ class _ProductIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final photoPath = product.imagePlaceholder;
+    final hasPhoto = photoPath != null &&
+        photoPath.isNotEmpty &&
+        File(photoPath).existsSync();
     return Container(
       width: 44,
       height: 44,
@@ -162,7 +168,14 @@ class _ProductIcon extends StatelessWidget {
         color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppDim.radiusM),
       ),
-      child: Icon(_icon, color: AppColors.primary, size: AppDim.iconSizeM),
+      clipBehavior: Clip.antiAlias,
+      child: hasPhoto
+          ? Image.file(File(photoPath), fit: BoxFit.cover)
+          : Icon(
+              _iconForCategory(product.categoryId),
+              color: AppColors.primary,
+              size: AppDim.iconSizeM,
+            ),
     );
   }
 }

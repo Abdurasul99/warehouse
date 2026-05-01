@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -67,6 +69,21 @@ class ProductDetailPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (product.imagePlaceholder != null &&
+                    product.imagePlaceholder!.isNotEmpty &&
+                    File(product.imagePlaceholder!).existsSync()) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDim.radiusL),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image.file(
+                        File(product.imagePlaceholder!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppDim.paddingM),
+                ],
                 _HeaderCard(product: product, category: category?.localizedName(locale)),
                 const SizedBox(height: AppDim.paddingM),
                 _StockCard(product: product, l10n: context.l10n),
