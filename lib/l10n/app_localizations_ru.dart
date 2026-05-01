@@ -242,6 +242,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get products_error_sku_duplicate => 'Такой SKU уже существует';
 
   @override
+  String get products_success_created => 'Товар успешно добавлен';
+
+  @override
   String get products_barcode_generate => 'Создать штрихкод';
 
   @override

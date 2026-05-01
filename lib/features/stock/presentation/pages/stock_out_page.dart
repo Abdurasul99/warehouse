@@ -83,7 +83,9 @@ class _StockOutPageState extends ConsumerState<StockOutPage> {
         title: Text(context.l10n.stock_out_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoutes.dashboard),
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.dashboard),
         ),
       ),
       body: SingleChildScrollView(

@@ -242,6 +242,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get products_error_sku_duplicate => 'Bu SKU allaqachon mavjud';
 
   @override
+  String get products_success_created => 'Mahsulot muvaffaqiyatli qo\'shildi';
+
+  @override
   String get products_barcode_generate => 'Barkod yaratish';
 
   @override

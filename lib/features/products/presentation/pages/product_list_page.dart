@@ -29,7 +29,9 @@ class ProductListPage extends ConsumerWidget {
         title: Text(context.l10n.products_list_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoutes.dashboard),
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.dashboard),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

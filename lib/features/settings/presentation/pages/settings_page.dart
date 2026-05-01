@@ -28,7 +28,9 @@ class SettingsPage extends ConsumerWidget {
         title: Text(context.l10n.settings_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoutes.dashboard),
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.dashboard),
         ),
         actions: const [LogoutActionButton()],
       ),

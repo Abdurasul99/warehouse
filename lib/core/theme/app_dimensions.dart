@@ -5,19 +5,19 @@ class AppDim {
   static const double paddingL = 24;
   static const double paddingXL = 32;
 
-  static const double radiusS = 4;
-  static const double radiusM = 8;
-  static const double radiusL = 12;
-  static const double radiusXL = 16;
-  static const double radiusRound = 50;
+  static const double radiusS = 6;
+  static const double radiusM = 12;
+  static const double radiusL = 16;
+  static const double radiusXL = 24;
+  static const double radiusRound = 999;
 
-  static const double cardElevation = 2;
+  static const double cardElevation = 0;
   static const double iconSizeS = 16;
   static const double iconSizeM = 24;
   static const double iconSizeL = 32;
   static const double iconSizeXL = 48;
 
-  static const double buttonHeight = 48;
+  static const double buttonHeight = 52;
   static const double inputHeight = 52;
   static const double appBarHeight = 56;
 }

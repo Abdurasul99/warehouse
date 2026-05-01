@@ -554,6 +554,12 @@ abstract class AppLocalizations {
   /// **'Bu SKU allaqachon mavjud'**
   String get products_error_sku_duplicate;
 
+  /// No description provided for @products_success_created.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mahsulot muvaffaqiyatli qo\'shildi'**
+  String get products_success_created;
+
   /// No description provided for @products_barcode_generate.
   ///
   /// In uz, this message translates to:

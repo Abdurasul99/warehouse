@@ -46,7 +46,9 @@ class _InventoryCheckPageState extends ConsumerState<InventoryCheckPage> {
         title: Text(context.l10n.inventory_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoutes.dashboard),
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.dashboard),
         ),
       ),
       body: productsAsync.when(

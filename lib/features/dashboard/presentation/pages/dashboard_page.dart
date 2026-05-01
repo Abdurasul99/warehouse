@@ -28,7 +28,7 @@ class DashboardPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.goNamed(AppRoutes.settings),
+            onPressed: () => context.pushNamed(AppRoutes.settings),
           ),
           const LogoutActionButton(),
         ],
@@ -37,24 +37,39 @@ class DashboardPage extends ConsumerWidget {
         onRefresh: () => ref.refresh(dashboardStatsProvider.future),
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: _buildHeader(context, user?.name)),
+            SliverToBoxAdapter(
+              child: _Greeting(userName: user?.name),
+            ),
             SliverToBoxAdapter(
               child: statsAsync.when(
-                data: (stats) => _buildStatsRow(context, stats),
+                data: (stats) => _StatsCard(stats: stats),
                 loading: () =>
-                    const SizedBox(height: 80, child: LoadingWidget()),
+                    const SizedBox(height: 96, child: LoadingWidget()),
                 error: (_, __) => const SizedBox.shrink(),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
-                  AppDim.paddingM, 0, AppDim.paddingM, AppDim.paddingM),
+                  AppDim.paddingM, AppDim.paddingL, AppDim.paddingM, AppDim.paddingS),
+              sliver: SliverToBoxAdapter(
+                child: Text(
+                  context.l10n.dashboard_subtitle,
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textSecondary,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppDim.paddingM, 0, AppDim.paddingM, AppDim.paddingL),
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: AppDim.paddingM,
                   crossAxisSpacing: AppDim.paddingM,
-                  childAspectRatio: 1.2,
+                  childAspectRatio: 1.05,
                 ),
                 delegate: SliverChildListDelegate(
                   _buildCards(context, statsAsync.valueOrNull),
@@ -67,143 +82,186 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, String? userName) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppDim.paddingM, AppDim.paddingM, AppDim.paddingM, AppDim.paddingS),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.dashboard_greeting(userName ?? ''),
-            style: AppTextStyles.heading2,
-          ),
-          Text(context.l10n.dashboard_subtitle, style: AppTextStyles.body2),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsRow(BuildContext context, DashboardStats stats) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppDim.paddingM, vertical: AppDim.paddingS),
-      child: Row(
-        children: [
-          _StatChip(
-            label: context.l10n.dashboard_stat_total,
-            value: stats.totalProducts.toString(),
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: AppDim.paddingS),
-          _StatChip(
-            label: context.l10n.dashboard_stat_low,
-            value: stats.lowStockCount.toString(),
-            color: AppColors.statusLow,
-          ),
-          const SizedBox(width: AppDim.paddingS),
-          _StatChip(
-            label: context.l10n.dashboard_stat_out,
-            value: stats.outOfStockCount.toString(),
-            color: AppColors.statusCritical,
-          ),
-          const SizedBox(width: AppDim.paddingS),
-          _StatChip(
-            label: context.l10n.dashboard_stat_today,
-            value: stats.todayMovements.toString(),
-            color: AppColors.movementIn,
-          ),
-        ],
-      ),
-    );
-  }
-
   List<Widget> _buildCards(BuildContext context, DashboardStats? stats) {
     return [
       DashboardCard(
         icon: Icons.inventory_2_outlined,
         title: context.l10n.dashboard_card_products,
-        subtitle: stats != null ? '${stats.totalProducts} ta' : null,
+        subtitle:
+            stats != null ? '${stats.totalProducts} ta' : null,
         color: AppColors.primary,
-        onTap: () => context.goNamed(AppRoutes.productList),
+        onTap: () => context.pushNamed(AppRoutes.productList),
       ),
       DashboardCard(
         icon: Icons.add_box_outlined,
         title: context.l10n.dashboard_card_add_product,
         color: AppColors.primaryLight,
-        onTap: () => context.goNamed(AppRoutes.productCreate),
+        onTap: () => context.pushNamed(AppRoutes.productCreate),
       ),
       DashboardCard(
         icon: Icons.arrow_circle_down_outlined,
         title: context.l10n.dashboard_card_stock_in,
         color: AppColors.movementIn,
-        onTap: () => context.goNamed(AppRoutes.stockIn),
+        onTap: () => context.pushNamed(AppRoutes.stockIn),
       ),
       DashboardCard(
         icon: Icons.arrow_circle_up_outlined,
         title: context.l10n.dashboard_card_stock_out,
         color: AppColors.movementOut,
-        onTap: () => context.goNamed(AppRoutes.stockOut),
+        onTap: () => context.pushNamed(AppRoutes.stockOut),
       ),
       DashboardCard(
         icon: Icons.fact_check_outlined,
         title: context.l10n.dashboard_card_inventory,
         color: AppColors.movementAdjustment,
-        onTap: () => context.goNamed(AppRoutes.inventory),
+        onTap: () => context.pushNamed(AppRoutes.inventory),
       ),
       DashboardCard(
         icon: Icons.history_outlined,
         title: context.l10n.dashboard_card_history,
         color: AppColors.accent,
-        onTap: () => context.goNamed(AppRoutes.movements),
+        onTap: () => context.pushNamed(AppRoutes.movements),
       ),
       DashboardCard(
         icon: Icons.auto_awesome,
         title: context.l10n.dashboard_card_assistant,
-        color: AppColors.movementIn,
-        onTap: () => context.goNamed(AppRoutes.assistant),
+        color: AppColors.movementTransfer,
+        onTap: () => context.pushNamed(AppRoutes.assistant),
       ),
       DashboardCard(
         icon: Icons.settings_outlined,
         title: context.l10n.dashboard_card_settings,
         color: AppColors.textSecondary,
-        onTap: () => context.goNamed(AppRoutes.settings),
+        onTap: () => context.pushNamed(AppRoutes.settings),
       ),
     ];
   }
 }
 
-class _StatChip extends StatelessWidget {
+class _Greeting extends StatelessWidget {
+  final String? userName;
+  const _Greeting({this.userName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          AppDim.paddingM, AppDim.paddingS, AppDim.paddingM, AppDim.paddingS),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.dashboard_greeting(userName ?? ''),
+            style: AppTextStyles.heading1,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            context.l10n.dashboard_subtitle,
+            style: AppTextStyles.body1
+                .copyWith(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatsCard extends StatelessWidget {
+  final DashboardStats stats;
+  const _StatsCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDim.paddingM),
+      child: Container(
+        padding: const EdgeInsets.all(AppDim.paddingM),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(AppDim.radiusL),
+        ),
+        child: Row(
+          children: [
+            _HeroStat(
+              label: context.l10n.dashboard_stat_total,
+              value: stats.totalProducts.toString(),
+              isPrimary: true,
+            ),
+            Container(
+              width: 1,
+              height: 48,
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
+            _HeroStat(
+              label: context.l10n.dashboard_stat_low,
+              value: stats.lowStockCount.toString(),
+              isPrimary: false,
+            ),
+            Container(
+              width: 1,
+              height: 48,
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
+            _HeroStat(
+              label: context.l10n.dashboard_stat_out,
+              value: stats.outOfStockCount.toString(),
+              isPrimary: false,
+            ),
+            Container(
+              width: 1,
+              height: 48,
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
+            _HeroStat(
+              label: context.l10n.dashboard_stat_today,
+              value: stats.todayMovements.toString(),
+              isPrimary: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroStat extends StatelessWidget {
   final String label;
   final String value;
-  final Color color;
-
-  const _StatChip(
-      {required this.label, required this.value, required this.color});
+  final bool isPrimary;
+  const _HeroStat({
+    required this.label,
+    required this.value,
+    required this.isPrimary,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-            vertical: AppDim.paddingS, horizontal: AppDim.paddingXS),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(AppDim.radiusM),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
-        ),
-        child: Column(
-          children: [
-            Text(value,
-                style: AppTextStyles.heading3
-                    .copyWith(color: color, fontSize: 18)),
-            Text(label,
-                style: AppTextStyles.caption,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-          ],
-        ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: isPrimary ? 24 : 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Colors.white.withValues(alpha: 0.85),
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
       ),
     );
   }

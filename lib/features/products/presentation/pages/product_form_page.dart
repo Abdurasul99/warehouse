@@ -27,6 +27,32 @@ class ProductFormPage extends ConsumerWidget {
     final locale = Localizations.localeOf(context).languageCode;
     final isEdit = productId != null;
 
+    ref.listen<ProductFormState>(productFormProvider(productId),
+        (prev, next) {
+      if (prev?.success != true && next.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isEdit
+                ? context.l10n.msg_success_saved
+                : context.l10n.products_success_created),
+            backgroundColor: AppColors.statusOk,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        ref.invalidate(productListProvider);
+        Future.delayed(const Duration(milliseconds: 350), () {
+          if (context.mounted) {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoutes.productList);
+            }
+            ref.invalidate(productFormProvider(productId));
+          }
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit
@@ -37,46 +63,12 @@ class ProductFormPage extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
       ),
-      body: formState.success
-          ? _SuccessView(context: context, isEdit: isEdit)
-          : _FormBody(
-              productId: productId,
-              formState: formState,
-              categoriesAsync: categoriesAsync,
-              locale: locale,
-              ref: ref,
-            ),
-    );
-  }
-}
-
-class _SuccessView extends StatelessWidget {
-  final BuildContext context;
-  final bool isEdit;
-  const _SuccessView({required this.context, required this.isEdit});
-
-  @override
-  Widget build(BuildContext ctx) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check_circle_outline,
-              size: 72, color: AppColors.statusOk),
-          const SizedBox(height: AppDim.paddingM),
-          Text(
-            isEdit ? 'Mahsulot yangilandi!' : 'Mahsulot qo\'shildi!',
-            style: AppTextStyles.heading2,
-          ),
-          const SizedBox(height: AppDim.paddingL),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppDim.paddingXL),
-            child: ElevatedButton(
-              onPressed: () => ctx.goNamed(AppRoutes.productList),
-              child: Text(ctx.l10n.products_list_title),
-            ),
-          ),
-        ],
+      body: _FormBody(
+        productId: productId,
+        formState: formState,
+        categoriesAsync: categoriesAsync,
+        locale: locale,
+        ref: ref,
       ),
     );
   }

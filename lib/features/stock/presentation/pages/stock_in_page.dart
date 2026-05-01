@@ -54,7 +54,9 @@ class _StockInPageState extends ConsumerState<StockInPage> {
         title: Text(context.l10n.stock_in_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoutes.dashboard),
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.dashboard),
         ),
       ),
       body: SingleChildScrollView(

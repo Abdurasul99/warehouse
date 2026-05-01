@@ -85,6 +85,7 @@
   "products_error_name_required": "Название товара обязательно",
   "products_error_category_required": "Выбор категории обязателен",
   "products_error_sku_duplicate": "Такой SKU уже существует",
+  "products_success_created": "Товар успешно добавлен",
   "products_barcode_generate": "Создать штрихкод",
   "products_barcode_scan": "Сканировать штрихкод",
   "products_category_add": "Новая категория",

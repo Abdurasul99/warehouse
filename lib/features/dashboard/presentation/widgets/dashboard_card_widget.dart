@@ -24,51 +24,69 @@ class DashboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       borderRadius: BorderRadius.circular(AppDim.radiusL),
-      elevation: AppDim.cardElevation,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDim.radiusL),
-        child: Padding(
-          padding: const EdgeInsets.all(AppDim.paddingM),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppDim.radiusM),
-                    ),
-                    child: Icon(icon, color: color, size: AppDim.iconSizeM),
-                  ),
-                  if (badge != null)
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppDim.radiusL),
+          border: Border.all(color: AppColors.divider, width: 1),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppDim.radiusL),
+          child: Padding(
+            padding: const EdgeInsets.all(AppDim.paddingM),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: AppColors.statusCritical.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(AppDim.radiusRound),
+                        color: color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppDim.radiusM),
                       ),
-                      child: Text(
-                        badge!,
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.statusCritical,
-                          fontWeight: FontWeight.w700,
+                      child: Icon(icon, color: color, size: 22),
+                    ),
+                    if (badge != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.statusCritical.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppDim.radiusRound),
+                        ),
+                        child: Text(
+                          badge!,
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.statusCritical,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
+                  ],
+                ),
+                const Spacer(),
+                Text(
+                  title,
+                  style: AppTextStyles.heading3.copyWith(fontSize: 14),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: AppTextStyles.body2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
-              ),
-              const Spacer(),
-              Text(title, style: AppTextStyles.heading3.copyWith(fontSize: 14)),
-              if (subtitle != null)
-                Text(subtitle!, style: AppTextStyles.body2),
-            ],
+              ],
+            ),
           ),
         ),
       ),

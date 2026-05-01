@@ -85,6 +85,7 @@
   "products_error_name_required": "Mahsulot nomi majburiy",
   "products_error_category_required": "Kategoriya tanlash majburiy",
   "products_error_sku_duplicate": "Bu SKU allaqachon mavjud",
+  "products_success_created": "Mahsulot muvaffaqiyatli qo'shildi",
   "products_barcode_generate": "Barkod yaratish",
   "products_barcode_scan": "Barkodni skanerlash",
   "products_category_add": "Yangi kategoriya",
