@@ -41,66 +41,83 @@ class ProductListPage extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          _SearchFilterBar(
-            filter: filter,
-            ref: ref,
-            locale: locale,
-            categoriesAsync: categoriesAsync,
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () =>
-                  ref.read(productListProvider.notifier).refresh(),
-              child: filteredAsync.when(
-                data: (products) {
-                  if (products.isEmpty) {
-                    return _ScrollableEmpty(
-                      child: EmptyStateWidget(
-                        message: context.l10n.products_empty,
-                        icon: Icons.inventory_2_outlined,
-                        actionLabel: context.l10n.products_btn_add,
-                        onAction: () =>
-                            context.goNamed(AppRoutes.productCreate),
-                      ),
-                    );
-                  }
-                  final categories = categoriesAsync.maybeWhen(
-                      data: (c) => c, orElse: () => <CategoryModel>[]);
-                  return ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(AppDim.paddingM,
-                        AppDim.paddingS, AppDim.paddingM, 80),
-                    itemCount: products.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: AppDim.paddingS),
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      return ProductCard(
-                        product: product,
-                        categories: categories,
-                        onTap: () => context.goNamed(
-                          AppRoutes.productDetail,
-                          pathParameters: {'id': product.id},
-                        ),
-                      );
-                    },
-                  );
-                },
-                loading: () =>
-                    const _ScrollableEmpty(child: LoadingWidget()),
-                error: (e, _) => _ScrollableEmpty(
-                  child: AppErrorWidget(
-                    message: e.toString(),
-                    onRetry: () =>
-                        ref.read(productListProvider.notifier).refresh(),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        top: false,
+        child: Container(
+          color: AppColors.background,
+          child: RefreshIndicator(
+            onRefresh: () =>
+                ref.read(productListProvider.notifier).refresh(),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _SearchFilterBar(
+                    filter: filter,
+                    ref: ref,
+                    locale: locale,
+                    categoriesAsync: categoriesAsync,
                   ),
                 ),
-              ),
+                filteredAsync.when(
+                  data: (products) {
+                    if (products.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: EmptyStateWidget(
+                            message: context.l10n.products_empty,
+                            icon: Icons.inventory_2_outlined,
+                            actionLabel: context.l10n.products_btn_add,
+                            onAction: () =>
+                                context.goNamed(AppRoutes.productCreate),
+                          ),
+                        ),
+                      );
+                    }
+                    final categories = categoriesAsync.maybeWhen(
+                        data: (c) => c, orElse: () => <CategoryModel>[]);
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(AppDim.paddingM,
+                          AppDim.paddingS, AppDim.paddingM, 80),
+                      sliver: SliverList.separated(
+                        itemCount: products.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppDim.paddingS),
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(
+                            product: product,
+                            categories: categories,
+                            onTap: () => context.goNamed(
+                              AppRoutes.productDetail,
+                              pathParameters: {'id': product.id},
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  loading: () => const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: LoadingWidget()),
+                  ),
+                  error: (e, _) => SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: AppErrorWidget(
+                        message: e.toString(),
+                        onRetry: () =>
+                            ref.read(productListProvider.notifier).refresh(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -184,29 +201,6 @@ class _SearchFilterBar extends StatelessWidget {
           const SizedBox(height: AppDim.paddingS),
         ],
       ),
-    );
-  }
-}
-
-/// Wraps non-scrollable content (loading / error / empty state) so that
-/// it can be hosted inside a [RefreshIndicator] which requires a
-/// scrollable child to render anything at all.
-class _ScrollableEmpty extends StatelessWidget {
-  final Widget child;
-  const _ScrollableEmpty({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(child: child),
-          ),
-        );
-      },
     );
   }
 }
