@@ -422,6 +422,36 @@ abstract class AppLocalizations {
   /// **'{count} ta tovar 30 kundan beri harakatsiz'**
   String analytics_slow_movers_chip(int count);
 
+  /// No description provided for @welcome_empty_title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ombor boʻsh'**
+  String get welcome_empty_title;
+
+  /// No description provided for @welcome_empty_subtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Birinchi mahsulotni qoʻshing va analitika faol boʻladi.'**
+  String get welcome_empty_subtitle;
+
+  /// No description provided for @welcome_empty_cta.
+  ///
+  /// In uz, this message translates to:
+  /// **'Birinchi mahsulotni qoʻshish'**
+  String get welcome_empty_cta;
+
+  /// No description provided for @stock_no_products.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hali mahsulot yoʻq. Avval mahsulot qoʻshing.'**
+  String get stock_no_products;
+
+  /// No description provided for @stock_no_products_cta.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mahsulot qoʻshish'**
+  String get stock_no_products_cta;
+
   /// No description provided for @assistant_title.
   ///
   /// In uz, this message translates to:
@@ -673,6 +703,18 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Mahsulot muvaffaqiyatli qo\'shildi'**
   String get products_success_created;
+
+  /// No description provided for @products_sku_label.
+  ///
+  /// In uz, this message translates to:
+  /// **'Artikul (SKU) — ixtiyoriy'**
+  String get products_sku_label;
+
+  /// No description provided for @products_sku_helper.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mahsulot kodi. Boʻsh qoldirsangiz avtomatik yaratiladi.'**
+  String get products_sku_helper;
 
   /// No description provided for @products_barcode_generate.
   ///

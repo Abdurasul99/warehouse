@@ -8,6 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/quantity_input_widget.dart';
 import '../../../../shared/mock_data/mock_database.dart';
+import '../../../products/presentation/providers/product_provider.dart';
 import '../providers/stock_in_provider.dart';
 import '../widgets/product_selector_widget.dart';
 
@@ -48,6 +49,11 @@ class _StockInPageState extends ConsumerState<StockInPage> {
   Widget build(BuildContext context) {
     final formState = ref.watch(stockInProvider);
     final warehouses = MockDatabase().warehouses;
+    final productListAsync = ref.watch(productListProvider);
+    final productsAvailable = productListAsync.maybeWhen(
+      data: (list) => list.isNotEmpty,
+      orElse: () => true,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +65,9 @@ class _StockInPageState extends ConsumerState<StockInPage> {
               : context.goNamed(AppRoutes.dashboard),
         ),
       ),
-      body: SingleChildScrollView(
+      body: !productsAvailable
+          ? _NoProductsState()
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(AppDim.paddingM),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,6 +159,47 @@ class _SectionHeader extends StatelessWidget {
         const SizedBox(width: AppDim.paddingM),
         Text(title, style: AppTextStyles.heading2),
       ],
+    );
+  }
+}
+
+class _NoProductsState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppDim.paddingL),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppDim.paddingM),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.inventory_2_outlined,
+                color: AppColors.primary,
+                size: 36,
+              ),
+            ),
+            const SizedBox(height: AppDim.paddingM),
+            Text(
+              context.l10n.stock_no_products,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body1
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: AppDim.paddingL),
+            FilledButton.icon(
+              onPressed: () => context.pushNamed(AppRoutes.productCreate),
+              icon: const Icon(Icons.add),
+              label: Text(context.l10n.stock_no_products_cta),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/mock_data/mock_database.dart';
+import '../../../../shared/models/product_model.dart';
 import '../../../../shared/services/deepseek_service.dart';
+import '../../../products/presentation/providers/product_provider.dart';
 
 class AssistantState {
   final List<ChatMessage> messages;
@@ -38,9 +40,14 @@ class AssistantNotifier extends Notifier<AssistantState> {
 
   String _buildSystemPrompt(String locale) {
     final db = MockDatabase();
-    final products = db.products;
+    final userId = ref.read(currentUserIdProvider);
+    final products = userId == null
+        ? <ProductModel>[]
+        : db.products.where((p) => p.ownerUserId == userId).toList();
+    final productIds = products.map((p) => p.id).toSet();
     final categories = db.categories;
-    final movements = db.movements;
+    final movements =
+        db.movements.where((m) => productIds.contains(m.productId)).toList();
     final today = DateTime.now();
 
     final lowStock = products

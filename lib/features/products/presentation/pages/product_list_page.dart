@@ -43,26 +43,35 @@ class ProductListPage extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          _SearchFilterBar(filter: filter, ref: ref, locale: locale,
-              categoriesAsync: categoriesAsync),
+          _SearchFilterBar(
+            filter: filter,
+            ref: ref,
+            locale: locale,
+            categoriesAsync: categoriesAsync,
+          ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => ref.read(productListProvider.notifier).refresh(),
+              onRefresh: () =>
+                  ref.read(productListProvider.notifier).refresh(),
               child: filteredAsync.when(
                 data: (products) {
                   if (products.isEmpty) {
-                    return EmptyStateWidget(
-                      message: context.l10n.products_empty,
-                      icon: Icons.inventory_2_outlined,
-                      actionLabel: context.l10n.products_btn_add,
-                      onAction: () => context.goNamed(AppRoutes.productCreate),
+                    return _ScrollableEmpty(
+                      child: EmptyStateWidget(
+                        message: context.l10n.products_empty,
+                        icon: Icons.inventory_2_outlined,
+                        actionLabel: context.l10n.products_btn_add,
+                        onAction: () =>
+                            context.goNamed(AppRoutes.productCreate),
+                      ),
                     );
                   }
                   final categories = categoriesAsync.maybeWhen(
                       data: (c) => c, orElse: () => <CategoryModel>[]);
                   return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(
-                        AppDim.paddingM, AppDim.paddingS, AppDim.paddingM, 80),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(AppDim.paddingM,
+                        AppDim.paddingS, AppDim.paddingM, 80),
                     itemCount: products.length,
                     separatorBuilder: (_, __) =>
                         const SizedBox(height: AppDim.paddingS),
@@ -79,11 +88,14 @@ class ProductListPage extends ConsumerWidget {
                     },
                   );
                 },
-                loading: () => const LoadingWidget(),
-                error: (e, _) => AppErrorWidget(
-                  message: e.toString(),
-                  onRetry: () =>
-                      ref.read(productListProvider.notifier).refresh(),
+                loading: () =>
+                    const _ScrollableEmpty(child: LoadingWidget()),
+                error: (e, _) => _ScrollableEmpty(
+                  child: AppErrorWidget(
+                    message: e.toString(),
+                    onRetry: () =>
+                        ref.read(productListProvider.notifier).refresh(),
+                  ),
                 ),
               ),
             ),
@@ -110,7 +122,12 @@ class _SearchFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(
+          bottom: BorderSide(color: AppColors.divider, width: 1),
+        ),
+      ),
       padding: const EdgeInsets.fromLTRB(
           AppDim.paddingM, AppDim.paddingS, AppDim.paddingM, 0),
       child: Column(
@@ -167,6 +184,29 @@ class _SearchFilterBar extends StatelessWidget {
           const SizedBox(height: AppDim.paddingS),
         ],
       ),
+    );
+  }
+}
+
+/// Wraps non-scrollable content (loading / error / empty state) so that
+/// it can be hosted inside a [RefreshIndicator] which requires a
+/// scrollable child to render anything at all.
+class _ScrollableEmpty extends StatelessWidget {
+  final Widget child;
+  const _ScrollableEmpty({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(child: child),
+          ),
+        );
+      },
     );
   }
 }

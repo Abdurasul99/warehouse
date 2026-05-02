@@ -17,6 +17,7 @@ import '../widgets/dashboard_card_widget.dart';
 import '../widgets/flow_value_row_widget.dart';
 import '../widgets/reorder_preview_widget.dart';
 import '../widgets/stock_health_pulse_widget.dart';
+import '../widgets/welcome_empty_widget.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -72,35 +73,46 @@ class DashboardPage extends ConsumerWidget {
             ),
             SliverToBoxAdapter(
               child: analyticsAsync.when(
-                data: (a) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppDim.paddingM),
-                  child: Column(
-                    children: [
-                      StockHealthPulseWidget(
-                        health: a.health,
-                        slowMoverCount: a.slowMoverCount,
-                      ),
-                      const SizedBox(height: AppDim.paddingM),
-                      ActionRequiredBannerWidget(
-                        count: a.criticalItems.length,
-                        onTap: () {
-                          ref
-                              .read(productFilterProvider.notifier)
-                              .setLowStock(true);
-                          context.pushNamed(AppRoutes.productList);
-                        },
-                      ),
-                      const SizedBox(height: AppDim.paddingM),
-                      FlowValueRowWidget(
-                        flow: a.todayFlow,
-                        inventoryValue: a.inventoryValue,
-                      ),
-                      const SizedBox(height: AppDim.paddingM),
-                      ReorderPreviewWidget(items: a.reorderQueue),
-                    ],
-                  ),
-                ),
+                data: (a) {
+                  if (a.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppDim.paddingM),
+                      child: WelcomeEmptyWidget(),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppDim.paddingM),
+                    child: Column(
+                      children: [
+                        StockHealthPulseWidget(
+                          health: a.health,
+                          slowMoverCount: a.slowMoverCount,
+                        ),
+                        if (a.criticalItems.isNotEmpty) ...[
+                          const SizedBox(height: AppDim.paddingM),
+                          ActionRequiredBannerWidget(
+                            count: a.criticalItems.length,
+                            onTap: () {
+                              ref
+                                  .read(productFilterProvider.notifier)
+                                  .setLowStock(true);
+                              context.pushNamed(AppRoutes.productList);
+                            },
+                          ),
+                        ],
+                        const SizedBox(height: AppDim.paddingM),
+                        FlowValueRowWidget(
+                          flow: a.todayFlow,
+                          inventoryValue: a.inventoryValue,
+                        ),
+                        const SizedBox(height: AppDim.paddingM),
+                        ReorderPreviewWidget(items: a.reorderQueue),
+                      ],
+                    ),
+                  );
+                },
                 loading: () => const Padding(
                   padding: EdgeInsets.all(AppDim.paddingM),
                   child: SizedBox(height: 80, child: LoadingWidget()),

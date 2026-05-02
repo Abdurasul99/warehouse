@@ -67,6 +67,7 @@ class AnalyticsSummary {
   final double inventoryValue;
   final List<ReorderItem> reorderQueue;
   final int slowMoverCount;
+  final int totalProducts;
 
   const AnalyticsSummary({
     required this.health,
@@ -75,5 +76,8 @@ class AnalyticsSummary {
     required this.inventoryValue,
     required this.reorderQueue,
     required this.slowMoverCount,
+    required this.totalProducts,
   });
+
+  bool get isEmpty => totalProducts == 0;
 }

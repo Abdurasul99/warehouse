@@ -62,10 +62,6 @@ class StockHealthPulseWidget extends StatelessWidget {
                       flex: (health.criticalRatio * 1000).round(),
                       child: Container(color: AppColors.statusCritical),
                     ),
-                  if (health.total == 0)
-                    Expanded(
-                      child: Container(color: AppColors.divider),
-                    ),
                 ],
               ),
             ),

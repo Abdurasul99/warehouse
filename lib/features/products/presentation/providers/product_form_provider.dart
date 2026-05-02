@@ -120,10 +120,6 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
       state = state.copyWith(errorMessage: 'Kategoriya tanlang');
       return false;
     }
-    if (state.sku.trim().isEmpty) {
-      state = state.copyWith(errorMessage: 'SKU majburiy');
-      return false;
-    }
     final isNew = state.id == null;
     final qty = int.tryParse(state.currentQuantity) ?? 0;
     if (isNew && qty == 0 && state.photoPath.isEmpty) {
@@ -134,8 +130,16 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
     }
 
     final repo = ref.read(productRepositoryProvider);
-    final isUnique = await repo.isSkuUnique(state.sku.trim(), excludeId: state.id);
-    if (!isUnique) {
+    final myProducts = ref.read(productListProvider).valueOrNull ?? const [];
+    var skuTrim = state.sku.trim();
+    if (skuTrim.isEmpty) {
+      skuTrim = _autoGenerateSku(state.name, myProducts);
+      state = state.copyWith(sku: skuTrim);
+    }
+    final duplicateInMyList = myProducts.any(
+      (p) => p.sku == skuTrim && p.id != state.id,
+    );
+    if (duplicateInMyList) {
       state = state.copyWith(errorMessage: 'Bu SKU allaqachon mavjud');
       return false;
     }
@@ -144,6 +148,7 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
 
     final existingProduct = state.id == null ? null : await repo.getById(state.id!);
     final now = DateTime.now();
+    final ownerId = ref.read(currentUserIdProvider) ?? 'usr_01';
     final product = ProductModel(
       id: state.id ?? const Uuid().v4(),
       name: state.name.trim(),
@@ -157,6 +162,7 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
       currentQuantity: int.tryParse(state.currentQuantity) ?? 0,
       minQuantity: int.tryParse(state.minQuantity) ?? 10,
       imagePlaceholder: state.photoPath.isEmpty ? null : state.photoPath,
+      ownerUserId: existingProduct?.ownerUserId ?? ownerId,
       createdAt: existingProduct?.createdAt ?? now,
       updatedAt: now,
     );
@@ -173,6 +179,21 @@ class ProductFormNotifier extends FamilyNotifier<ProductFormState, String?> {
     } catch (e) {
       state = state.copyWith(isSubmitting: false, errorMessage: e.toString());
       return false;
+    }
+  }
+
+  String _autoGenerateSku(String name, List<ProductModel> existing) {
+    final base = name
+        .trim()
+        .toUpperCase()
+        .replaceAll(RegExp(r'[^A-Z0-9]'), '')
+        .padRight(3, 'X')
+        .substring(0, 3);
+    var n = existing.length + 1;
+    while (true) {
+      final candidate = '$base-${n.toString().padLeft(3, '0')}';
+      if (!existing.any((p) => p.sku == candidate)) return candidate;
+      n++;
     }
   }
 }

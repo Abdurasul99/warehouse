@@ -14,6 +14,7 @@ class ProductModel extends Equatable {
   final int currentQuantity;
   final int minQuantity;
   final String? imagePlaceholder;
+  final String ownerUserId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -30,6 +31,7 @@ class ProductModel extends Equatable {
     required this.currentQuantity,
     required this.minQuantity,
     this.imagePlaceholder,
+    this.ownerUserId = 'usr_01',
     required this.createdAt,
     required this.updatedAt,
   });
@@ -53,6 +55,7 @@ class ProductModel extends Equatable {
     int? currentQuantity,
     int? minQuantity,
     String? imagePlaceholder,
+    String? ownerUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) =>
@@ -69,6 +72,7 @@ class ProductModel extends Equatable {
         currentQuantity: currentQuantity ?? this.currentQuantity,
         minQuantity: minQuantity ?? this.minQuantity,
         imagePlaceholder: imagePlaceholder ?? this.imagePlaceholder,
+        ownerUserId: ownerUserId ?? this.ownerUserId,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -86,6 +90,7 @@ class ProductModel extends Equatable {
         'current_quantity': currentQuantity,
         'min_quantity': minQuantity,
         'image_placeholder': imagePlaceholder,
+        'owner_user_id': ownerUserId,
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt.toIso8601String(),
       };
@@ -103,6 +108,7 @@ class ProductModel extends Equatable {
         currentQuantity: json['current_quantity'] as int,
         minQuantity: json['min_quantity'] as int,
         imagePlaceholder: json['image_placeholder'] as String?,
+        ownerUserId: json['owner_user_id'] as String? ?? 'usr_01',
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
       );

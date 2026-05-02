@@ -16,6 +16,13 @@ class DeepSeekService {
   static const _endpoint = 'https://api.deepseek.com/v1/chat/completions';
   static const _model = 'deepseek-chat';
 
+  final http.Client _client;
+  final String _apiKey;
+
+  DeepSeekService({http.Client? client, String? apiKey})
+      : _client = client ?? http.Client(),
+        _apiKey = apiKey ?? ApiKeys.deepseek;
+
   Future<String> chat({
     required List<ChatMessage> messages,
     String? systemPrompt,
@@ -31,11 +38,11 @@ class DeepSeekService {
       'max_tokens': 1500,
     };
 
-    final response = await http.post(
+    final response = await _client.post(
       Uri.parse(_endpoint),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiKeys.deepseek}',
+        'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode(body),
     );

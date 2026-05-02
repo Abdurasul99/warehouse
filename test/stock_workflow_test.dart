@@ -10,8 +10,10 @@ import 'package:sales_system_warehouse_mobile/shared/mock_data/mock_database.dar
 void main() {
   late MockDatabase db;
 
-  ProviderContainer createContainer() {
-    final container = ProviderContainer();
+  ProviderContainer createContainer({String? userId = 'usr_01'}) {
+    final container = ProviderContainer(
+      overrides: [currentUserIdProvider.overrideWithValue(userId)],
+    );
     addTearDown(container.dispose);
     return container;
   }

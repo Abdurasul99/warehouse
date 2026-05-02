@@ -179,6 +179,23 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get welcome_empty_title => 'Ombor boʻsh';
+
+  @override
+  String get welcome_empty_subtitle =>
+      'Birinchi mahsulotni qoʻshing va analitika faol boʻladi.';
+
+  @override
+  String get welcome_empty_cta => 'Birinchi mahsulotni qoʻshish';
+
+  @override
+  String get stock_no_products =>
+      'Hali mahsulot yoʻq. Avval mahsulot qoʻshing.';
+
+  @override
+  String get stock_no_products_cta => 'Mahsulot qoʻshish';
+
+  @override
   String get assistant_title => 'Ombor yordamchisi';
 
   @override
@@ -306,6 +323,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get products_success_created => 'Mahsulot muvaffaqiyatli qo\'shildi';
+
+  @override
+  String get products_sku_label => 'Artikul (SKU) — ixtiyoriy';
+
+  @override
+  String get products_sku_helper =>
+      'Mahsulot kodi. Boʻsh qoldirsangiz avtomatik yaratiladi.';
 
   @override
   String get products_barcode_generate => 'Barkod yaratish';

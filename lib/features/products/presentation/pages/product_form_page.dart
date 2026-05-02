@@ -13,6 +13,8 @@ import '../../../../core/utils/validators.dart';
 import '../../../../shared/models/category_model.dart';
 import '../../../../shared/services/barcode_service.dart';
 import '../../../../shared/services/photo_service.dart';
+import '../../../dashboard/presentation/providers/analytics_provider.dart';
+import '../../../dashboard/presentation/providers/dashboard_provider.dart';
 import '../providers/product_form_provider.dart';
 import '../providers/product_provider.dart';
 
@@ -40,6 +42,8 @@ class ProductFormPage extends ConsumerWidget {
           ),
         );
         ref.invalidate(productListProvider);
+        ref.invalidate(dashboardStatsProvider);
+        ref.invalidate(analyticsSummaryProvider);
         Future.delayed(const Duration(milliseconds: 350), () {
           if (context.mounted) {
             if (context.canPop()) {
@@ -374,10 +378,15 @@ class _FormBodyState extends ConsumerState<_FormBody> {
             const SizedBox(height: AppDim.paddingM),
             TextFormField(
               controller: _skuCtrl,
-              decoration: const InputDecoration(labelText: 'SKU'),
-              validator: (v) =>
-                  Validators.required(v, message: 'SKU majburiy') ??
-                  Validators.sku(v),
+              decoration: InputDecoration(
+                labelText: context.l10n.products_sku_label,
+                helperText: context.l10n.products_sku_helper,
+                helperMaxLines: 2,
+              ),
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return null;
+                return Validators.sku(v);
+              },
             ),
             const SizedBox(height: AppDim.paddingM),
             TextFormField(

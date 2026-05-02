@@ -4,13 +4,19 @@ import '../../../../core/utils/enums.dart';
 import '../../../../shared/mock_data/mock_database.dart';
 import '../../../../shared/models/product_model.dart';
 import '../../../../shared/models/stock_movement_model.dart';
+import '../../../products/presentation/providers/product_provider.dart';
 import '../../domain/analytics_summary.dart';
 
 final analyticsSummaryProvider = FutureProvider<AnalyticsSummary>((ref) async {
   await Future<void>.delayed(const Duration(milliseconds: 80));
   final db = MockDatabase();
-  final products = db.products;
-  final movements = db.movements;
+  final userId = ref.watch(currentUserIdProvider);
+  final products = userId == null
+      ? const <ProductModel>[]
+      : db.products.where((p) => p.ownerUserId == userId).toList();
+  final productIds = products.map((p) => p.id).toSet();
+  final movements =
+      db.movements.where((m) => productIds.contains(m.productId)).toList();
 
   final ok = products.where((p) => p.stockStatus == StockStatus.ok).length;
   final low = products.where((p) => p.stockStatus == StockStatus.low).length;
@@ -48,6 +54,7 @@ final analyticsSummaryProvider = FutureProvider<AnalyticsSummary>((ref) async {
     inventoryValue: inventoryValue,
     reorderQueue: reorderCandidates.take(3).toList(),
     slowMoverCount: slowMovers,
+    totalProducts: products.length,
   );
 });
 

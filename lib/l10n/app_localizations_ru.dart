@@ -179,6 +179,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get welcome_empty_title => 'Склад пуст';
+
+  @override
+  String get welcome_empty_subtitle =>
+      'Добавьте первый товар — аналитика заработает сразу.';
+
+  @override
+  String get welcome_empty_cta => 'Добавить первый товар';
+
+  @override
+  String get stock_no_products => 'Товаров пока нет. Сначала добавьте товары.';
+
+  @override
+  String get stock_no_products_cta => 'Добавить товар';
+
+  @override
   String get assistant_title => 'Помощник склада';
 
   @override
@@ -306,6 +322,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get products_success_created => 'Товар успешно добавлен';
+
+  @override
+  String get products_sku_label => 'Артикул (SKU) — необязательно';
+
+  @override
+  String get products_sku_helper =>
+      'Код товара. Если оставить пустым, создастся автоматически.';
 
   @override
   String get products_barcode_generate => 'Создать штрихкод';

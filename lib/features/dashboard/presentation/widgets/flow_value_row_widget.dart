@@ -19,13 +19,15 @@ class FlowValueRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: _FlowCard(flow: flow)),
-        const SizedBox(width: AppDim.paddingM),
-        Expanded(child: _ValueCard(value: inventoryValue)),
-      ],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: _FlowCard(flow: flow)),
+          const SizedBox(width: AppDim.paddingM),
+          Expanded(child: _ValueCard(value: inventoryValue)),
+        ],
+      ),
     );
   }
 }

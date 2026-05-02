@@ -1,10 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/category_model.dart';
 import '../../../../shared/models/product_model.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../../domain/repositories/product_repository.dart';
+
+final currentUserIdProvider = Provider<String?>((ref) {
+  return ref.watch(authProvider).maybeWhen(
+        data: (user) => user?.id,
+        orElse: () => null,
+      );
+});
 
 final productRepositoryProvider = Provider<ProductRepository>(
   (_) => ProductRepositoryImpl(),
@@ -17,12 +25,20 @@ final productListProvider = AsyncNotifierProvider<ProductListNotifier, List<Prod
 class ProductListNotifier extends AsyncNotifier<List<ProductModel>> {
   @override
   Future<List<ProductModel>> build() async {
-    return ref.read(productRepositoryProvider).getAll();
+    final userId = ref.watch(currentUserIdProvider);
+    final all = await ref.read(productRepositoryProvider).getAll();
+    if (userId == null) return const [];
+    return all.where((p) => p.ownerUserId == userId).toList();
   }
 
   Future<void> refresh() async {
+    final userId = ref.read(currentUserIdProvider);
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(productRepositoryProvider).getAll());
+    state = await AsyncValue.guard(() async {
+      final all = await ref.read(productRepositoryProvider).getAll();
+      if (userId == null) return const <ProductModel>[];
+      return all.where((p) => p.ownerUserId == userId).toList();
+    });
   }
 
   Future<bool> delete(String id) async {
