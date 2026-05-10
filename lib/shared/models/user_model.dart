@@ -35,6 +35,39 @@ class UserModel extends Equatable {
         password: '',
       );
 
+  // Maps user from sales-system /api/auth/login response into UserModel.
+  // New backend roles: founder, admin, manager, cashier, seller, user.
+  // Legacy roles still supported: ADMIN / SUPERADMIN / WAREHOUSE_CLERK / CASHIER.
+  factory UserModel.fromServerJson(Map<String, dynamic> json) {
+    final raw = (json['role'] as String? ?? '').toLowerCase();
+    final UserRole role;
+    switch (raw) {
+      case 'founder':
+      case 'admin':
+      case 'superadmin':
+        role = UserRole.admin;
+        break;
+      case 'manager':
+      case 'cashier':
+      case 'warehouse_clerk':
+        role = UserRole.warehouseManager;
+        break;
+      case 'seller':
+      case 'user':
+      default:
+        role = UserRole.warehouseWorker;
+        break;
+    }
+    return UserModel(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['fullName'] as String?) ?? (json['name'] as String? ?? ''),
+      role: role,
+      language: json['language'] as String? ?? 'uz',
+      username: (json['username'] as String?) ?? (json['login'] as String? ?? ''),
+      password: '',
+    );
+  }
+
   UserModel copyWith({
     String? id,
     String? name,

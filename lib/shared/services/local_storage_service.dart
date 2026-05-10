@@ -29,6 +29,26 @@ class LocalStorageService {
     }
   }
 
+  String? get authToken => _prefs?.getString(AppConfig.keyAuthToken);
+
+  Future<void> setAuthToken(String? token) async {
+    if (token == null) {
+      await _prefs?.remove(AppConfig.keyAuthToken);
+    } else {
+      await _prefs?.setString(AppConfig.keyAuthToken, token);
+    }
+  }
+
+  String? get currentUserJson => _prefs?.getString(AppConfig.keyCurrentUserJson);
+
+  Future<void> setCurrentUserJson(String? json) async {
+    if (json == null) {
+      await _prefs?.remove(AppConfig.keyCurrentUserJson);
+    } else {
+      await _prefs?.setString(AppConfig.keyCurrentUserJson, json);
+    }
+  }
+
   Future<void> clear() async {
     await _prefs?.clear();
   }

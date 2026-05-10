@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:sales_system_warehouse_mobile/l10n/app_localizations.dart';
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/enums.dart';
 import 'features/assistant/presentation/pages/assistant_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/inventory/presentation/pages/inventory_check_page.dart';
+import 'features/owner/presentation/pages/owner_dashboard_page.dart';
 import 'features/movements/presentation/pages/movement_history_page.dart';
 import 'features/products/presentation/pages/product_detail_page.dart';
 import 'features/products/presentation/pages/product_form_page.dart';
@@ -30,13 +32,18 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     refreshListenable: notifier,
     redirect: (context, state) {
-      final isAuthenticated = ref.read(authProvider).maybeWhen(
-        data: (user) => user != null,
-        orElse: () => false,
+      final user = ref.read(authProvider).maybeWhen(
+        data: (u) => u,
+        orElse: () => null,
       );
+      final isAuthenticated = user != null;
       final isOnLogin = state.matchedLocation == '/login';
       if (!isAuthenticated && !isOnLogin) return '/login';
-      if (isAuthenticated && isOnLogin) return '/dashboard';
+      if (isAuthenticated && isOnLogin) {
+        // Owners (site role ADMIN/SUPERADMIN → mapped to UserRole.admin) get the
+        // new "Учредитель" dashboard. Everyone else falls back to the legacy UI.
+        return user.role == UserRole.admin ? '/owner' : '/dashboard';
+      }
       return null;
     },
     routes: [
@@ -49,6 +56,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => child,
         routes: [
+          GoRoute(
+            path: '/owner',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: OwnerDashboardPage()),
+          ),
           GoRoute(
             path: '/dashboard',
             name: AppRoutes.dashboard,

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Default: HTTPS only (secure default for Android 9+) -->
+    <base-config cleartextTrafficPermitted="false" />
+
+    <!-- Allow cleartext HTTP only for the sales-system production server.
+         Once HTTPS is set up, remove this exception. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">15.164.220.51</domain>
+    </domain-config>
+</network-security-config>

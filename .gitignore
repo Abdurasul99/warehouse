@@ -43,6 +43,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/
+android/build/
+
+# Test coverage
+coverage/
 
 # Secrets - NEVER commit
 lib/core/config/api_keys.dart

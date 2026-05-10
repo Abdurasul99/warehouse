@@ -113,6 +113,58 @@ class ProductModel extends Equatable {
         updatedAt: DateTime.parse(json['updated_at'] as String),
       );
 
+  // Maps product from sales-system /api/products response.
+  // Site fields: costPrice, sellingPrice, categoryId, minStockLevel, imageUrl,
+  // inventory: [{ quantity }] (one row per branch — sum across branches for total).
+  factory ProductModel.fromServerJson(Map<String, dynamic> json) {
+    // Stock: new backend exposes flat `stock`; legacy backend uses `inventory[]`.
+    int currentQty;
+    if (json['stock'] is num) {
+      currentQty = (json['stock'] as num).toInt();
+    } else {
+      final inventoryList = (json['inventory'] as List?) ?? const [];
+      final totalQty = inventoryList.fold<num>(
+        0,
+        (sum, inv) =>
+            sum + ((inv is Map && inv['quantity'] is num) ? inv['quantity'] as num : 0),
+      );
+      currentQty = totalQty.toInt();
+    }
+
+    // Pricing: new backend has single `price` (selling). Legacy has cost+selling.
+    final selling = ((json['sellingPrice'] as num?) ??
+            (json['price'] as num?) ??
+            0)
+        .toDouble();
+    final purchase = ((json['costPrice'] as num?) ?? selling).toDouble();
+
+    final categoryValue = (json['categoryId'] as String?) ??
+        (json['category'] as String?) ??
+        '';
+
+    return ProductModel(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name'] as String,
+      sku: (json['sku'] as String?) ?? '',
+      barcode: json['barcode'] as String?,
+      categoryId: categoryValue,
+      description: json['description'] as String?,
+      unit: (json['unit'] as String?) ?? 'шт',
+      purchasePrice: purchase,
+      sellingPrice: selling,
+      currentQuantity: currentQty,
+      minQuantity: ((json['minStockLevel'] as num?) ?? 0).toInt(),
+      imagePlaceholder: json['imageUrl'] as String?,
+      ownerUserId: (json['organizationId'] as String?) ??
+          (json['createdBy'] as String?) ??
+          'org_01',
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+      updatedAt:
+          DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? DateTime.now(),
+    );
+  }
+
   @override
   List<Object?> get props => [id, sku, currentQuantity, updatedAt];
 }

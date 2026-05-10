@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/category_model.dart';
 import '../../../../shared/models/product_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/repositories/category_repository.dart';
@@ -14,9 +15,13 @@ final currentUserIdProvider = Provider<String?>((ref) {
       );
 });
 
-final productRepositoryProvider = Provider<ProductRepository>(
-  (_) => ProductRepositoryImpl(),
-);
+final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((ref) {
+  return ProductRemoteDataSource(ref.watch(apiClientProvider));
+});
+
+final productRepositoryProvider = Provider<ProductRepository>((ref) {
+  return ProductRepositoryImpl(ref.watch(productRemoteDataSourceProvider));
+});
 
 final productListProvider = AsyncNotifierProvider<ProductListNotifier, List<ProductModel>>(
   ProductListNotifier.new,
@@ -25,19 +30,19 @@ final productListProvider = AsyncNotifierProvider<ProductListNotifier, List<Prod
 class ProductListNotifier extends AsyncNotifier<List<ProductModel>> {
   @override
   Future<List<ProductModel>> build() async {
+    // Server already scopes products to the authenticated user's organization,
+    // so no client-side ownerUserId filtering is needed.
     final userId = ref.watch(currentUserIdProvider);
-    final all = await ref.read(productRepositoryProvider).getAll();
     if (userId == null) return const [];
-    return all.where((p) => p.ownerUserId == userId).toList();
+    return ref.read(productRepositoryProvider).getAll();
   }
 
   Future<void> refresh() async {
     final userId = ref.read(currentUserIdProvider);
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final all = await ref.read(productRepositoryProvider).getAll();
       if (userId == null) return const <ProductModel>[];
-      return all.where((p) => p.ownerUserId == userId).toList();
+      return ref.read(productRepositoryProvider).getAll();
     });
   }
 

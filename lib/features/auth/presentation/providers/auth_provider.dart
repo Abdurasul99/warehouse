@@ -1,13 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/api_client.dart';
 import '../../../../shared/models/user_model.dart';
-import '../../../../shared/services/auth_service.dart';
 import '../../../../shared/services/local_storage_service.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
+
+final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
+  return AuthRemoteDataSource(ref.watch(apiClientProvider));
+});
+
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final storage = ref.watch(localStorageServiceProvider).requireValue;
-  return AuthRepositoryImpl(AuthService(), storage);
+  final remote = ref.watch(authRemoteDataSourceProvider);
+  return AuthRepositoryImpl(remote, storage, ref.watch(apiClientProvider));
 });
 
 final localStorageServiceProvider = FutureProvider<LocalStorageService>((ref) async {
@@ -21,10 +29,9 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, UserModel?>(() {
 class AuthNotifier extends AsyncNotifier<UserModel?> {
   @override
   Future<UserModel?> build() async {
-    final storage = await ref.watch(localStorageServiceProvider.future);
-    final id = storage.currentUserId;
-    if (id == null) return null;
-    return AuthService().getUserById(id);
+    await ref.watch(localStorageServiceProvider.future);
+    final repo = ref.read(authRepositoryProvider);
+    return repo.getCurrentUser();
   }
 
   Future<bool> login(String username, String password) async {

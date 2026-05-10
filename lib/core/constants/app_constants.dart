@@ -77,4 +77,6 @@ class AppConfig {
   static const String defaultLanguage = 'uz';
   static const String keyLocale = 'app_locale';
   static const String keyCurrentUser = 'current_user_id';
+  static const String keyAuthToken = 'auth_token';
+  static const String keyCurrentUserJson = 'current_user_json';
 }

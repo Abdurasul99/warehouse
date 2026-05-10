@@ -1,60 +1,50 @@
-import '../../../../shared/mock_data/mock_database.dart';
 import '../../../../shared/models/product_model.dart';
 import '../../domain/repositories/product_repository.dart';
+import '../datasources/product_remote_datasource.dart';
 
+// MVP1: read-only against sales-system server. Mutations are not yet implemented
+// against the server and would silently no-op or corrupt local UI state, so we throw.
 class ProductRepositoryImpl implements ProductRepository {
-  final MockDatabase _db = MockDatabase();
+  final ProductRemoteDataSource _remote;
+  final List<ProductModel> _cache = [];
+
+  ProductRepositoryImpl(this._remote);
 
   @override
   Future<List<ProductModel>> getAll() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return List.from(_db.products);
+    final list = await _remote.getAll();
+    _cache
+      ..clear()
+      ..addAll(list);
+    return List.unmodifiable(list);
   }
 
   @override
   Future<ProductModel?> getById(String id) async {
-    try {
-      return _db.products.firstWhere((p) => p.id == id);
-    } catch (_) {
-      return null;
-    }
+    final fromCache = _cache.where((p) => p.id == id).toList();
+    if (fromCache.isNotEmpty) return fromCache.first;
+    return _remote.getById(id);
   }
 
   @override
-  Future<ProductModel> create(ProductModel product) async {
-    _db.products.add(product);
-    return product;
-  }
+  Future<ProductModel> create(ProductModel product) =>
+      throw UnimplementedError('Создание товаров пока недоступно с мобильного');
 
   @override
-  Future<ProductModel> update(ProductModel product) async {
-    final index = _db.products.indexWhere((p) => p.id == product.id);
-    if (index != -1) {
-      _db.products[index] = product;
-    }
-    return product;
-  }
+  Future<ProductModel> update(ProductModel product) =>
+      throw UnimplementedError('Редактирование товаров пока недоступно с мобильного');
 
   @override
-  Future<void> delete(String id) async {
-    _db.products.removeWhere((p) => p.id == id);
-  }
+  Future<void> delete(String id) =>
+      throw UnimplementedError('Удаление товаров пока недоступно с мобильного');
 
   @override
-  Future<void> updateQuantity(String id, int newQuantity) async {
-    final index = _db.products.indexWhere((p) => p.id == id);
-    if (index != -1) {
-      _db.products[index] = _db.products[index].copyWith(
-        currentQuantity: newQuantity,
-        updatedAt: DateTime.now(),
-      );
-    }
-  }
+  Future<void> updateQuantity(String id, int newQuantity) =>
+      throw UnimplementedError('Изменение остатков пока недоступно с мобильного');
 
   @override
   Future<bool> isSkuUnique(String sku, {String? excludeId}) async {
-    return !_db.products.any(
-      (p) => p.sku == sku && p.id != excludeId,
-    );
+    final list = _cache.isNotEmpty ? _cache : await getAll();
+    return !list.any((p) => p.sku == sku && p.id != excludeId);
   }
 }
