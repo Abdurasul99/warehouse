@@ -1,52 +1,55 @@
-import 'dart:convert';
-
-import '../../../../core/network/api_client.dart';
+import '../../../../core/utils/enums.dart';
 import '../../../../shared/models/user_model.dart';
+import '../../../../shared/services/auth_service.dart';
 import '../../../../shared/services/local_storage_service.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource _remote;
+  final AuthService _authService;
   final LocalStorageService _storage;
-  final ApiClient _api;
 
-  AuthRepositoryImpl(this._remote, this._storage, [ApiClient? api])
-      : _api = api ?? ApiClient();
+  AuthRepositoryImpl(this._authService, this._storage);
 
   @override
   Future<UserModel?> login(String username, String password) async {
-    try {
-      final result = await _remote.login(username, password);
-      _api.token = result.token;
-      await _storage.setAuthToken(result.token);
-      await _storage.setCurrentUserId(result.user.id);
-      await _storage.setCurrentUserJson(jsonEncode(result.user.toJson()));
-      return result.user;
-    } on ApiException {
-      return null;
+    final user = await _authService.login(username, password);
+    if (user != null) {
+      await _storage.setCurrentUserId(user.id);
     }
+    return user;
   }
 
   @override
   Future<void> logout() async {
-    _api.token = null;
-    await _storage.setAuthToken(null);
     await _storage.setCurrentUserId(null);
-    await _storage.setCurrentUserJson(null);
   }
 
   @override
   Future<UserModel?> getCurrentUser() async {
-    final token = _storage.authToken;
-    if (token == null || token.isEmpty) return null;
-    _api.token = token;
-    final raw = _storage.currentUserJson;
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      return UserModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw) as Map));
-    } catch (_) {
-      return null;
-    }
+    final id = _storage.currentUserId;
+    if (id == null) return null;
+    return _authService.getUserById(id);
+  }
+
+  @override
+  bool isUsernameTaken(String username) => _authService.isUsernameTaken(username);
+
+  @override
+  Future<UserModel> register({
+    required String name,
+    required String username,
+    required String password,
+    required UserRole role,
+    String language = 'uz',
+  }) async {
+    final user = await _authService.register(
+      name: name,
+      username: username,
+      password: password,
+      role: role,
+      language: language,
+    );
+    await _storage.setCurrentUserId(user.id);
+    return user;
   }
 }

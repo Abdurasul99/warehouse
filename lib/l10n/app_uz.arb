@@ -164,5 +164,21 @@
   "settings_app_section": "Ilova",
   "settings_version_label": "Versiya",
   "settings_btn_logout": "Chiqish",
-  "settings_logout_confirm": "Tizimdan chiqishni tasdiqlaysizmi?"
+  "settings_logout_confirm": "Tizimdan chiqishni tasdiqlaysizmi?",
+
+  "auth_register_title": "Ro'yxatdan o'tish",
+  "auth_register_subtitle": "Yangi hisob yaratish",
+  "auth_btn_register": "Ro'yxatdan o'tish",
+  "auth_btn_have_account": "Hisobingiz bormi? Kirish",
+  "auth_btn_no_account": "Hisob yo'qmi? Ro'yxatdan o'ting",
+  "auth_name_label": "To'liq ism",
+  "auth_name_hint": "Ismingizni kiriting",
+  "auth_confirm_password_label": "Parolni tasdiqlash",
+  "auth_confirm_password_hint": "Parolni qayta kiriting",
+  "auth_role_label": "Rol",
+  "auth_error_password_mismatch": "Parollar mos emas",
+  "auth_error_username_taken": "Bu foydalanuvchi nomi band",
+  "auth_error_name_required": "Ism majburiy",
+  "auth_error_password_short": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+  "auth_success_registered": "Muvaffaqiyatli ro'yxatdan o'tdingiz"
 }

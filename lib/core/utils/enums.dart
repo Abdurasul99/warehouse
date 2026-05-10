@@ -1,4 +1,13 @@
-enum UserRole { admin, warehouseManager, warehouseWorker }
+enum UserRole {
+  founder,           // Учредитель
+  branchManager,     // Менеджер филиала
+  cashierWarehouse,  // Кассир + Завсклад
+  salesperson,       // Продавец
+  // legacy
+  admin,
+  warehouseManager,
+  warehouseWorker,
+}
 
 enum MovementType {
   inbound,
@@ -15,6 +24,14 @@ enum StockStatus { ok, low, critical }
 extension UserRoleLabel on UserRole {
   String get labelUz {
     switch (this) {
+      case UserRole.founder:
+        return 'Muassis';
+      case UserRole.branchManager:
+        return 'Filial menejeri';
+      case UserRole.cashierWarehouse:
+        return 'Kassir + Ombordor';
+      case UserRole.salesperson:
+        return 'Sotuvchi';
       case UserRole.admin:
         return 'Admin';
       case UserRole.warehouseManager:
@@ -26,6 +43,14 @@ extension UserRoleLabel on UserRole {
 
   String get labelRu {
     switch (this) {
+      case UserRole.founder:
+        return 'Учредитель';
+      case UserRole.branchManager:
+        return 'Менеджер филиала';
+      case UserRole.cashierWarehouse:
+        return 'Кассир + Завсклад';
+      case UserRole.salesperson:
+        return 'Продавец';
       case UserRole.admin:
         return 'Администратор';
       case UserRole.warehouseManager:

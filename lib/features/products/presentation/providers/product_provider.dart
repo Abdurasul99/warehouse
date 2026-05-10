@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/category_model.dart';
 import '../../../../shared/models/product_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/repositories/category_repository.dart';
@@ -15,13 +14,9 @@ final currentUserIdProvider = Provider<String?>((ref) {
       );
 });
 
-final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((ref) {
-  return ProductRemoteDataSource(ref.watch(apiClientProvider));
-});
-
-final productRepositoryProvider = Provider<ProductRepository>((ref) {
-  return ProductRepositoryImpl(ref.watch(productRemoteDataSourceProvider));
-});
+final productRepositoryProvider = Provider<ProductRepository>(
+  (_) => ProductRepositoryImpl(),
+);
 
 final productListProvider = AsyncNotifierProvider<ProductListNotifier, List<ProductModel>>(
   ProductListNotifier.new,
@@ -30,20 +25,14 @@ final productListProvider = AsyncNotifierProvider<ProductListNotifier, List<Prod
 class ProductListNotifier extends AsyncNotifier<List<ProductModel>> {
   @override
   Future<List<ProductModel>> build() async {
-    // Server already scopes products to the authenticated user's organization,
-    // so no client-side ownerUserId filtering is needed.
-    final userId = ref.watch(currentUserIdProvider);
-    if (userId == null) return const [];
     return ref.read(productRepositoryProvider).getAll();
   }
 
   Future<void> refresh() async {
-    final userId = ref.read(currentUserIdProvider);
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      if (userId == null) return const <ProductModel>[];
-      return ref.read(productRepositoryProvider).getAll();
-    });
+    state = await AsyncValue.guard(
+      () => ref.read(productRepositoryProvider).getAll(),
+    );
   }
 
   Future<bool> delete(String id) async {
@@ -126,10 +115,7 @@ final filteredProductsProvider = Provider<AsyncValue<List<ProductModel>>>((ref) 
       result = result.where((p) => p.categoryId == filter.categoryId).toList();
     }
     if (filter.lowStockOnly) {
-      result = result
-          .where((p) =>
-              p.currentQuantity <= p.minQuantity)
-          .toList();
+      result = result.where((p) => p.currentQuantity <= p.minQuantity).toList();
     }
     return result;
   });

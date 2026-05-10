@@ -13,6 +13,7 @@ import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/status_badge_widget.dart';
 import '../providers/product_provider.dart';
+import '../../../../shared/services/barcode_label_service.dart';
 
 class ProductDetailPage extends ConsumerWidget {
   final String id;
@@ -115,6 +116,17 @@ class ProductDetailPage extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: AppDim.paddingM),
+                if (product.barcode != null && product.barcode!.isNotEmpty)
+                  ElevatedButton.icon(
+                    onPressed: () => BarcodeLabelService.shareLabel(context, product),
+                    icon: const Icon(Icons.print_outlined),
+                    label: const Text('Barkod etiketini chiqarish'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
               ],
             ),
           );

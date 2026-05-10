@@ -164,5 +164,21 @@
   "settings_app_section": "Приложение",
   "settings_version_label": "Версия",
   "settings_btn_logout": "Выйти",
-  "settings_logout_confirm": "Вы уверены, что хотите выйти из системы?"
+  "settings_logout_confirm": "Вы уверены, что хотите выйти из системы?",
+
+  "auth_register_title": "Регистрация",
+  "auth_register_subtitle": "Создание нового аккаунта",
+  "auth_btn_register": "Зарегистрироваться",
+  "auth_btn_have_account": "Уже есть аккаунт? Войти",
+  "auth_btn_no_account": "Нет аккаунта? Зарегистрироваться",
+  "auth_name_label": "Полное имя",
+  "auth_name_hint": "Введите ваше имя",
+  "auth_confirm_password_label": "Подтвердите пароль",
+  "auth_confirm_password_hint": "Введите пароль ещё раз",
+  "auth_role_label": "Роль",
+  "auth_error_password_mismatch": "Пароли не совпадают",
+  "auth_error_username_taken": "Это имя пользователя уже занято",
+  "auth_error_name_required": "Имя обязательно",
+  "auth_error_password_short": "Пароль должен содержать не менее 6 символов",
+  "auth_success_registered": "Регистрация прошла успешно"
 }

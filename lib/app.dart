@@ -8,14 +8,19 @@ import 'core/theme/app_theme.dart';
 import 'core/utils/enums.dart';
 import 'features/assistant/presentation/pages/assistant_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/register_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/cashier/presentation/pages/cashier_dashboard_page.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
+import 'features/founder/presentation/pages/founder_dashboard_page.dart';
 import 'features/inventory/presentation/pages/inventory_check_page.dart';
+import 'features/manager/presentation/pages/manager_dashboard_page.dart';
 import 'features/owner/presentation/pages/owner_dashboard_page.dart';
 import 'features/movements/presentation/pages/movement_history_page.dart';
 import 'features/products/presentation/pages/product_detail_page.dart';
 import 'features/products/presentation/pages/product_form_page.dart';
 import 'features/products/presentation/pages/product_list_page.dart';
+import 'features/salesperson/presentation/pages/salesperson_dashboard_page.dart';
 import 'features/settings/presentation/pages/settings_page.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
 import 'features/stock/presentation/pages/stock_in_page.dart';
@@ -23,8 +28,21 @@ import 'features/stock/presentation/pages/stock_out_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-// Router is a stable Provider — created once, never rebuilt.
-// This makes logout redirect reliable.
+String _homeForRole(UserRole? role) {
+  switch (role) {
+    case UserRole.founder:
+      return '/founder';
+    case UserRole.branchManager:
+      return '/manager';
+    case UserRole.cashierWarehouse:
+      return '/cashier';
+    case UserRole.salesperson:
+      return '/salesperson';
+    default:
+      return '/dashboard';
+  }
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterChangeNotifier(ref);
   return GoRouter(
@@ -32,26 +50,46 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     refreshListenable: notifier,
     redirect: (context, state) {
-      final user = ref.read(authProvider).maybeWhen(
-        data: (u) => u,
-        orElse: () => null,
-      );
+      final user = ref.read(authProvider).valueOrNull;
       final isAuthenticated = user != null;
-      final isOnLogin = state.matchedLocation == '/login';
-      if (!isAuthenticated && !isOnLogin) return '/login';
-      if (isAuthenticated && isOnLogin) {
-        // Owners (site role ADMIN/SUPERADMIN → mapped to UserRole.admin) get the
-        // new "Учредитель" dashboard. Everyone else falls back to the legacy UI.
-        return user.role == UserRole.admin ? '/owner' : '/dashboard';
-      }
+      final loc = state.matchedLocation;
+      final isOnAuth = loc == '/login' || loc == '/register';
+
+      if (!isAuthenticated && !isOnAuth) return '/login';
+      if (isAuthenticated && isOnAuth) return _homeForRole(user.role);
       return null;
     },
     routes: [
       GoRoute(
         path: '/login',
         name: AppRoutes.login,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: LoginPage()),
+        pageBuilder: (context, state) => const NoTransitionPage(child: LoginPage()),
+      ),
+      GoRoute(
+        path: '/register',
+        name: AppRoutes.register,
+        pageBuilder: (context, state) => const MaterialPage(child: RegisterPage()),
+      ),
+      // Role-based home pages
+      GoRoute(
+        path: '/founder',
+        name: 'founder',
+        pageBuilder: (context, state) => const NoTransitionPage(child: FounderDashboardPage()),
+      ),
+      GoRoute(
+        path: '/manager',
+        name: 'manager',
+        pageBuilder: (context, state) => const NoTransitionPage(child: ManagerDashboardPage()),
+      ),
+      GoRoute(
+        path: '/cashier',
+        name: 'cashier',
+        pageBuilder: (context, state) => const NoTransitionPage(child: CashierDashboardPage()),
+      ),
+      GoRoute(
+        path: '/salesperson',
+        name: 'salesperson',
+        pageBuilder: (context, state) => const NoTransitionPage(child: SalespersonDashboardPage()),
       ),
       ShellRoute(
         builder: (context, state, child) => child,
@@ -64,20 +102,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             name: AppRoutes.dashboard,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: DashboardPage()),
+            pageBuilder: (context, state) => const NoTransitionPage(child: DashboardPage()),
           ),
           GoRoute(
             path: '/products',
             name: AppRoutes.productList,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ProductListPage()),
+            pageBuilder: (context, state) => const NoTransitionPage(child: ProductListPage()),
             routes: [
               GoRoute(
                 path: 'new',
                 name: AppRoutes.productCreate,
-                pageBuilder: (context, state) =>
-                    const MaterialPage(child: ProductFormPage()),
+                pageBuilder: (context, state) => const MaterialPage(child: ProductFormPage()),
               ),
               GoRoute(
                 path: ':id',
@@ -90,8 +125,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'edit',
                     name: AppRoutes.productEdit,
                     pageBuilder: (context, state) => MaterialPage(
-                      child: ProductFormPage(
-                          productId: state.pathParameters['id']),
+                      child: ProductFormPage(productId: state.pathParameters['id']),
                     ),
                   ),
                 ],
@@ -101,38 +135,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/stock-in',
             name: AppRoutes.stockIn,
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: StockInPage()),
+            pageBuilder: (context, state) => const MaterialPage(child: StockInPage()),
           ),
           GoRoute(
             path: '/stock-out',
             name: AppRoutes.stockOut,
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: StockOutPage()),
+            pageBuilder: (context, state) => const MaterialPage(child: StockOutPage()),
           ),
           GoRoute(
             path: '/inventory',
             name: AppRoutes.inventory,
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: InventoryCheckPage()),
+            pageBuilder: (context, state) => const MaterialPage(child: InventoryCheckPage()),
           ),
           GoRoute(
             path: '/movements',
             name: AppRoutes.movements,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: MovementHistoryPage()),
+            pageBuilder: (context, state) => const NoTransitionPage(child: MovementHistoryPage()),
           ),
           GoRoute(
             path: '/settings',
             name: AppRoutes.settings,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: SettingsPage()),
+            pageBuilder: (context, state) => const NoTransitionPage(child: SettingsPage()),
           ),
           GoRoute(
             path: '/assistant',
             name: AppRoutes.assistant,
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: AssistantPage()),
+            pageBuilder: (context, state) => const MaterialPage(child: AssistantPage()),
           ),
         ],
       ),
@@ -142,8 +170,6 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 class _RouterChangeNotifier extends ChangeNotifier {
   _RouterChangeNotifier(Ref ref) {
-    // Listen to auth state. When user logs out (state → null),
-    // notifyListeners() causes GoRouter to re-evaluate redirect → /login.
     ref.listen(authProvider, (_, __) => notifyListeners());
   }
 }

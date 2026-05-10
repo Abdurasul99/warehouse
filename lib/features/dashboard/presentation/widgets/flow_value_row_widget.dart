@@ -9,26 +9,15 @@ import '../../domain/analytics_summary.dart';
 
 class FlowValueRowWidget extends StatelessWidget {
   final FlowDelta flow;
-  final double inventoryValue;
 
   const FlowValueRowWidget({
     super.key,
     required this.flow,
-    required this.inventoryValue,
   });
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: _FlowCard(flow: flow)),
-          const SizedBox(width: AppDim.paddingM),
-          Expanded(child: _ValueCard(value: inventoryValue)),
-        ],
-      ),
-    );
+    return _FlowCard(flow: flow);
   }
 }
 
@@ -133,55 +122,6 @@ class _MiniStat extends StatelessWidget {
         const SizedBox(width: 4),
         Text('$label: $value', style: AppTextStyles.caption),
       ],
-    );
-  }
-}
-
-class _ValueCard extends StatelessWidget {
-  final double value;
-  const _ValueCard({required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final formatter = NumberFormat.decimalPattern();
-    return Container(
-      padding: const EdgeInsets.all(AppDim.paddingM),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDim.radiusL),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.analytics_value_title,
-                  style: AppTextStyles.label,
-                ),
-              ),
-              const Icon(Icons.account_balance_wallet_outlined,
-                  color: AppColors.primary, size: 18),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            formatter.format(value.round()),
-            style: AppTextStyles.heading1.copyWith(
-              color: AppColors.textPrimary,
-              fontSize: 22,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "soʻm · ${l10n.analytics_value_subtitle}",
-            style: AppTextStyles.caption,
-          ),
-        ],
-      ),
     );
   }
 }

@@ -68,6 +68,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ],
               const SizedBox(height: AppDim.paddingL),
               _buildLoginButton(isLoading),
+              const SizedBox(height: AppDim.paddingM),
+              _buildRegisterLink(),
             ],
           ),
         ),
@@ -172,6 +174,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
             )
           : Text(context.l10n.auth_btn_login),
+    );
+  }
+
+  Widget _buildRegisterLink() {
+    return TextButton(
+      onPressed: () => context.goNamed(AppRoutes.register),
+      child: Text(context.l10n.auth_btn_no_account),
     );
   }
 }

@@ -1,21 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/network/api_client.dart';
+import '../../../../core/utils/enums.dart';
 import '../../../../shared/models/user_model.dart';
+import '../../../../shared/services/auth_service.dart';
 import '../../../../shared/services/local_storage_service.dart';
-import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
-
-final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  return AuthRemoteDataSource(ref.watch(apiClientProvider));
-});
-
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final storage = ref.watch(localStorageServiceProvider).requireValue;
-  final remote = ref.watch(authRemoteDataSourceProvider);
-  return AuthRepositoryImpl(remote, storage, ref.watch(apiClientProvider));
+  return AuthRepositoryImpl(AuthService(), storage);
 });
 
 final localStorageServiceProvider = FutureProvider<LocalStorageService>((ref) async {
@@ -29,9 +22,10 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, UserModel?>(() {
 class AuthNotifier extends AsyncNotifier<UserModel?> {
   @override
   Future<UserModel?> build() async {
-    await ref.watch(localStorageServiceProvider.future);
-    final repo = ref.read(authRepositoryProvider);
-    return repo.getCurrentUser();
+    final storage = await ref.watch(localStorageServiceProvider.future);
+    final id = storage.currentUserId;
+    if (id == null) return null;
+    return AuthService().getUserById(id);
   }
 
   Future<bool> login(String username, String password) async {
@@ -46,6 +40,30 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     final repo = ref.read(authRepositoryProvider);
     await repo.logout();
     state = const AsyncValue.data(null);
+  }
+
+  Future<UserModel> register({
+    required String name,
+    required String username,
+    required String password,
+    required UserRole role,
+    String language = 'uz',
+  }) async {
+    state = const AsyncValue.loading();
+    final repo = ref.read(authRepositoryProvider);
+    final user = await repo.register(
+      name: name,
+      username: username,
+      password: password,
+      role: role,
+      language: language,
+    );
+    state = AsyncValue.data(user);
+    return user;
+  }
+
+  bool isUsernameTaken(String username) {
+    return ref.read(authRepositoryProvider).isUsernameTaken(username);
   }
 }
 

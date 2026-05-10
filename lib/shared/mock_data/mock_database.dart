@@ -4,12 +4,14 @@ import '../models/product_model.dart';
 import '../models/warehouse_model.dart';
 import '../models/stock_balance_model.dart';
 import '../models/stock_movement_model.dart';
+import '../models/branch_model.dart';
 import 'mock_users.dart';
 import 'mock_categories.dart';
 import 'mock_products.dart';
 import 'mock_warehouses.dart';
 import 'mock_stock_balances.dart';
 import 'mock_movements.dart';
+import 'mock_branches.dart';
 
 class MockDatabase {
   static final MockDatabase _instance = MockDatabase._internal();
@@ -22,6 +24,7 @@ class MockDatabase {
   late List<WarehouseModel> warehouses;
   late List<StockBalanceModel> stockBalances;
   late List<StockMovementModel> movements;
+  late List<BranchModel> branches;
   bool _initialized = false;
 
   void initialize() {
@@ -32,6 +35,7 @@ class MockDatabase {
     warehouses = List.from(mockWarehouses);
     stockBalances = List.from(mockStockBalances);
     movements = List.from(mockMovements);
+    branches = List.from(mockBranches);
     _initialized = true;
   }
 

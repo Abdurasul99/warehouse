@@ -127,7 +127,7 @@ class _SearchFilterBar extends StatelessWidget {
   final ProductFilter filter;
   final WidgetRef ref;
   final String locale;
-  final AsyncValue categoriesAsync;
+  final AsyncValue<List<CategoryModel>> categoriesAsync;
 
   const _SearchFilterBar({
     required this.filter,

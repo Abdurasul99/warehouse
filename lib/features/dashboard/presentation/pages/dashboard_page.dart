@@ -105,7 +105,6 @@ class DashboardPage extends ConsumerWidget {
                         const SizedBox(height: AppDim.paddingM),
                         FlowValueRowWidget(
                           flow: a.todayFlow,
-                          inventoryValue: a.inventoryValue,
                         ),
                         const SizedBox(height: AppDim.paddingM),
                         ReorderPreviewWidget(items: a.reorderQueue),
