@@ -9,38 +9,51 @@
   <style>
     body{font-family:'Segoe UI',system-ui,sans-serif;}
     .badge-founder{background:#EEF2FF;color:#4F46E5;}
-    .badge-branchManager{background:#F0FDF4;color:#16A34A;}
-    .badge-cashierWarehouse{background:#FFF7ED;color:#EA580C;}
-    .badge-salesperson{background:#FDF4FF;color:#9333EA;}
     .badge-admin{background:#F1F5F9;color:#475569;}
+    .badge-manager{background:#F0FDF4;color:#16A34A;}
+    .badge-cashier{background:#FFF7ED;color:#EA580C;}
+    .badge-seller{background:#FDF4FF;color:#9333EA;}
+    .badge-user{background:#F9FAFB;color:#9CA3AF;}
     .row-blocked{opacity:0.5;}
+    .spinner{width:20px;height:20px;border:2px solid #E5E7EB;border-top-color:#4F46E5;border-radius:50%;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<!-- LOGIN -->
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="min-h-screen flex items-center justify-center">
   <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
     <div class="flex justify-center mb-6">
       <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
         </svg>
       </div>
     </div>
-    <h1 class="text-xl font-bold text-center text-gray-800 mb-1">Ombor Tizimi</h1>
-    <p class="text-sm text-center text-gray-500 mb-6">Панель управления пользователями</p>
+    <h1 class="text-xl font-bold text-center text-gray-800 mb-1">Admin Panel</h1>
+    <p class="text-sm text-center text-gray-500 mb-2">Ombor Tizimi — управление пользователями</p>
+    <p class="text-xs text-center text-indigo-500 mb-6">Вход только для учредителя / администратора</p>
     <div id="loginError" class="hidden bg-red-50 text-red-600 text-sm rounded-lg p-3 mb-4"></div>
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Логин</label>
-        <input id="loginUsername" type="text" placeholder="admin" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        <input id="loginUsername" type="text" placeholder="username или email"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
-        <input id="loginPassword" type="password" placeholder="••••••••" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        <input id="loginPassword" type="password" placeholder="••••••••"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <button onclick="doLogin()" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 rounded-lg transition-colors">Войти</button>
+      <button id="loginBtn" onclick="doLogin()"
+        class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+        Войти
+      </button>
+    </div>
+    <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+      <p class="text-xs text-blue-700 font-medium">Нет аккаунта?</p>
+      <p class="text-xs text-blue-600 mt-1">Зарегистрируйтесь через мобильное приложение — первый пользователь автоматически становится учредителем.</p>
     </div>
   </div>
 </div>
@@ -54,8 +67,11 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
         </svg>
       </div>
-      <span class="font-bold text-gray-800">Ombor Tizimi</span>
-      <span class="text-gray-400 text-sm hidden sm:inline">/ Пользователи</span>
+      <div>
+        <span class="font-bold text-gray-800">Ombor Tizimi</span>
+        <span class="text-gray-400 text-sm hidden sm:inline"> / Сотрудники</span>
+      </div>
+      <span id="currentUserBadge" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium"></span>
     </div>
     <button onclick="doLogout()" class="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,56 +84,67 @@
   <div class="max-w-5xl mx-auto px-4 py-8">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Пользователи</h2>
-        <p class="text-sm text-gray-500 mt-1">Управление доступом к мобильному приложению</p>
+        <h2 class="text-2xl font-bold text-gray-800">Сотрудники организации</h2>
+        <p id="orgInfo" class="text-sm text-gray-500 mt-1"></p>
       </div>
-      <button onclick="showModal()" class="bg-primary hover:bg-primaryDark text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors w-fit">
+      <button onclick="showCreateModal()"
+        class="bg-primary hover:bg-primaryDark text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors w-fit">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Создать пользователя
+        Добавить сотрудника
       </button>
     </div>
 
+    <!-- Stats -->
     <div id="statsRow" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"></div>
 
+    <!-- Filters -->
     <div class="flex items-center gap-2 mb-4 flex-wrap">
       <button onclick="setFilter('all')" id="tab-all" class="tab-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-primary text-white">Все</button>
       <button onclick="setFilter('active')" id="tab-active" class="tab-btn px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Активные</button>
       <button onclick="setFilter('blocked')" id="tab-blocked" class="tab-btn px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Заблокированные</button>
     </div>
 
+    <!-- Table -->
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
         <input id="searchInput" onkeyup="renderUsers()" type="text" placeholder="Поиск по имени или логину..." class="text-sm w-full focus:outline-none text-gray-700">
       </div>
-      <div id="usersTable"></div>
+      <div id="usersTable">
+        <div class="flex justify-center py-12"><div class="spinner"></div></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- CREATE/EDIT MODAL -->
-<div id="modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+<!-- CREATE USER MODAL -->
+<div id="createModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-      <h3 id="modalTitle" class="font-bold text-gray-800">Создать пользователя</h3>
-      <button onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <h3 id="modalTitle" class="font-bold text-gray-800">Добавить сотрудника</h3>
+      <button onclick="hideCreateModal()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
     <div class="px-6 py-5 space-y-4">
       <div id="modalError" class="hidden bg-red-50 text-red-600 text-sm rounded-lg p-3"></div>
+      <div id="modalSuccess" class="hidden bg-green-50 text-green-700 text-sm rounded-lg p-3"></div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Полное имя <span class="text-red-400">*</span></label>
-        <input id="fName" type="text" placeholder="Мирсаид Каримов" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        <input id="fName" type="text" placeholder="Иванов Иван" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Логин <span class="text-red-400">*</span></label>
-          <input id="fUsername" type="text" placeholder="mirsaid" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+          <input id="fUsername" type="text" placeholder="ivan123" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Пароль <span class="text-red-400">*</span></label>
           <div class="relative">
             <input id="fPassword" type="text" placeholder="Min 6 символов" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary pr-8">
-            <button onclick="generatePass()" title="Сгенерировать" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+            <button onclick="genPass()" title="Сгенерировать" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -125,10 +152,11 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Роль <span class="text-red-400">*</span></label>
         <select id="fRole" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
           <option value="">— Выберите роль —</option>
-          <option value="founder">Учредитель</option>
-          <option value="branchManager">Менеджер филиала</option>
-          <option value="cashierWarehouse">Кассир + Завсклад</option>
-          <option value="salesperson">Продавец</option>
+          <option value="admin">Администратор</option>
+          <option value="manager">Менеджер филиала</option>
+          <option value="cashier">Кассир + Завсклад</option>
+          <option value="seller">Продавец</option>
+          <option value="user">Пользователь</option>
         </select>
       </div>
       <div>
@@ -144,8 +172,10 @@
       </div>
     </div>
     <div class="px-6 pb-5 flex gap-3">
-      <button onclick="hideModal()" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2 rounded-lg text-sm hover:bg-gray-50">Отмена</button>
-      <button onclick="saveUser()" class="flex-1 bg-primary hover:bg-primaryDark text-white font-semibold py-2 rounded-lg text-sm transition-colors">Сохранить</button>
+      <button onclick="hideCreateModal()" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2 rounded-lg text-sm hover:bg-gray-50">Отмена</button>
+      <button id="saveBtn" onclick="saveUser()" class="flex-1 bg-primary hover:bg-primaryDark text-white font-semibold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+        Сохранить
+      </button>
     </div>
   </div>
 </div>
@@ -154,20 +184,20 @@
 <div id="credsModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
     <div class="px-6 py-4 border-b border-gray-100">
-      <h3 class="font-bold text-gray-800">Данные для входа</h3>
-      <p class="text-xs text-gray-500 mt-0.5">Передайте сотруднику лично</p>
+      <h3 class="font-bold text-gray-800">✅ Сотрудник создан</h3>
+      <p class="text-xs text-gray-500 mt-0.5">Передайте данные для входа сотруднику</p>
     </div>
     <div class="px-6 py-5 space-y-3">
       <div class="bg-gray-50 rounded-xl p-4 space-y-2.5 font-mono text-sm">
         <div class="flex justify-between"><span class="text-gray-400 text-xs">Имя</span><span id="cName" class="font-semibold text-gray-800"></span></div>
         <div class="flex justify-between"><span class="text-gray-400 text-xs">Роль</span><span id="cRole" class="font-semibold text-gray-800"></span></div>
-        <div class="flex justify-between"><span class="text-gray-400 text-xs">Филиал</span><span id="cBranch" class="font-semibold text-gray-800"></span></div>
         <div class="flex justify-between"><span class="text-gray-400 text-xs">Логин</span><span id="cLogin" class="font-semibold text-primary text-base"></span></div>
         <div class="flex justify-between"><span class="text-gray-400 text-xs">Пароль</span><span id="cPass" class="font-semibold text-primary text-base"></span></div>
+        <div class="flex justify-between"><span class="text-gray-400 text-xs">Сервер</span><span class="font-semibold text-gray-600 text-xs">15.164.220.51</span></div>
       </div>
-      <button id="copyBtn" onclick="copyCredentials()" class="w-full border border-primary text-primary font-semibold py-2 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-        Скопировать
+      <button id="copyCredsBtn" onclick="copyCreds()"
+        class="w-full border border-primary text-primary font-semibold py-2 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
+        📋 Скопировать данные
       </button>
     </div>
     <div class="px-6 pb-5">
@@ -189,144 +219,277 @@
 </div>
 
 <script>
-const ADMIN_USER='admin',ADMIN_PASS='Admin123';
-const ROLES={founder:'Учредитель',branchManager:'Менеджер филиала',cashierWarehouse:'Кассир + Завсклад',salesperson:'Продавец',admin:'Администратор'};
-const BRANCHES={'':'—',branch_01:'Chorsu',branch_02:'Alayskiy',branch_03:'Samarqand Darvoza',branch_04:'Yunusobod',branch_05:'Mirobod'};
-const DEFAULT_USERS=[
-  {id:'usr_01',name:'Mirsaid Karimov',  username:'founder',password:'founder123',role:'founder',         branch:'',         blocked:false,createdAt:'2026-05-08'},
-  {id:'usr_02',name:'Shahnoза Alimova', username:'manager',password:'manager123',role:'branchManager',   branch:'branch_01',blocked:false,createdAt:'2026-05-08'},
-  {id:'usr_03',name:'Bekzod Rahimov',   username:'cashier',password:'cashier123',role:'cashierWarehouse',branch:'branch_01',blocked:false,createdAt:'2026-05-08'},
-  {id:'usr_04',name:'Dilnoza Karimova', username:'seller', password:'seller123', role:'salesperson',     branch:'branch_01',blocked:false,createdAt:'2026-05-08'},
-  {id:'usr_05',name:'Admin Adminov',    username:'admin',  password:'admin123',  role:'admin',           branch:'',         blocked:false,createdAt:'2026-05-08'},
-];
-function loadUsers(){const r=localStorage.getItem('wh_users_v2');if(r)return JSON.parse(r);saveUsers([...DEFAULT_USERS]);return[...DEFAULT_USERS];}
-function saveUsers(u){localStorage.setItem('wh_users_v2',JSON.stringify(u));}
+const API = 'http://15.164.220.51/api';
+const ROLES = { founder:'Учредитель', admin:'Администратор', manager:'Менеджер', cashier:'Кассир + Завсклад', seller:'Продавец', user:'Пользователь' };
 
-function isLoggedIn(){return sessionStorage.getItem('wh_admin')==='1';}
-function doLogin(){
-  const u=document.getElementById('loginUsername').value.trim();
-  const p=document.getElementById('loginPassword').value;
-  const err=document.getElementById('loginError');
-  if(u===ADMIN_USER&&p===ADMIN_PASS){sessionStorage.setItem('wh_admin','1');err.classList.add('hidden');showMain();}
-  else{err.textContent='Неверный логин или пароль';err.classList.remove('hidden');}
+let _token = null;
+let _currentUser = null;
+let _users = [];
+let _filter = 'all';
+let _savingCreds = null;
+let _editId = null;
+
+// ---- API HELPERS ----
+async function apiCall(method, path, body) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (_token) headers['Authorization'] = 'Bearer ' + _token;
+  const res = await fetch(API + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (data.code === '0000') return data.body;
+  const msg = data.message || 'Ошибка сервера';
+  throw new Error(msg);
 }
-function doLogout(){sessionStorage.removeItem('wh_admin');document.getElementById('mainApp').classList.add('hidden');document.getElementById('loginPage').classList.remove('hidden');}
-document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('loginUsername').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-let _filter='all';
-function showMain(){document.getElementById('loginPage').classList.add('hidden');document.getElementById('mainApp').classList.remove('hidden');renderStats();renderUsers();}
-function setFilter(f){
-  _filter=f;
-  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-primary','text-white');b.classList.add('text-gray-600','hover:bg-gray-100');});
-  const a=document.getElementById('tab-'+f);a.classList.add('bg-primary','text-white');a.classList.remove('text-gray-600','hover:bg-gray-100');
+// ---- AUTH ----
+async function doLogin() {
+  const login = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  err.classList.add('hidden');
+  btn.innerHTML = '<div class="spinner"></div>';
+  btn.disabled = true;
+  try {
+    const data = await apiCall('POST', '/auth/login', { login, password });
+    const role = data.user?.role;
+    if (!['founder', 'admin'].includes(role)) {
+      throw new Error('Доступ только для учредителя или администратора');
+    }
+    _token = data.token;
+    _currentUser = data.user;
+    sessionStorage.setItem('admin_token', _token);
+    sessionStorage.setItem('admin_user', JSON.stringify(_currentUser));
+    showMain();
+  } catch (e) {
+    err.textContent = e.message;
+    err.classList.remove('hidden');
+  } finally {
+    btn.innerHTML = 'Войти';
+    btn.disabled = false;
+  }
+}
+
+function doLogout() {
+  _token = null; _currentUser = null; _users = [];
+  sessionStorage.removeItem('admin_token');
+  sessionStorage.removeItem('admin_user');
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginUsername').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ---- MAIN ----
+async function showMain() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('currentUserBadge').textContent = `${_currentUser.name} · ${ROLES[_currentUser.role] || _currentUser.role}`;
+  await loadUsers();
+}
+
+async function loadUsers() {
+  try {
+    const data = await apiCall('GET', '/users');
+    _users = data.items || [];
+    renderStats();
+    renderUsers();
+    document.getElementById('orgInfo').textContent = `Организация · ${_users.length} сотрудников`;
+  } catch (e) {
+    document.getElementById('usersTable').innerHTML = `<div class="text-center text-red-500 py-8 text-sm">Ошибка загрузки: ${e.message}</div>`;
+  }
+}
+
+function setFilter(f) {
+  _filter = f;
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('bg-primary','text-white'); b.classList.add('text-gray-600','hover:bg-gray-100'); });
+  const a = document.getElementById('tab-' + f);
+  a.classList.add('bg-primary','text-white'); a.classList.remove('text-gray-600','hover:bg-gray-100');
   renderUsers();
 }
-function renderStats(){
-  const u=loadUsers();
-  const total=u.length,active=u.filter(x=>!x.blocked).length,blocked=u.filter(x=>x.blocked).length;
-  const founders=u.filter(x=>x.role==='founder'&&!x.blocked).length;
-  const mgr=u.filter(x=>x.role==='branchManager'&&!x.blocked).length;
-  const staff=u.filter(x=>['cashierWarehouse','salesperson'].includes(x.role)&&!x.blocked).length;
-  document.getElementById('statsRow').innerHTML=`
+
+function renderStats() {
+  const total = _users.length;
+  const active = _users.filter(u => u.state !== 'BLOCKED').length;
+  const blocked = _users.filter(u => u.state === 'BLOCKED').length;
+  const byRole = {};
+  Object.keys(ROLES).forEach(r => byRole[r] = _users.filter(u => u.role === r).length);
+  document.getElementById('statsRow').innerHTML = `
     <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-gray-800">${total}</div><div class="text-xs text-gray-500 mt-1">Всего</div></div>
     <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-green-600">${active}</div><div class="text-xs text-gray-500 mt-1">Активных</div></div>
     <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-red-500">${blocked}</div><div class="text-xs text-gray-500 mt-1">Заблокировано</div></div>
-    <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-indigo-600">${founders}</div><div class="text-xs text-gray-500 mt-1">Учредителей</div></div>
-    <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-purple-600">${mgr+staff}</div><div class="text-xs text-gray-500 mt-1">Сотрудников</div></div>`;
+    <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-indigo-600">${byRole.founder||0}</div><div class="text-xs text-gray-500 mt-1">Учредителей</div></div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4"><div class="text-2xl font-bold text-purple-600">${(byRole.manager||0)+(byRole.cashier||0)+(byRole.seller||0)}</div><div class="text-xs text-gray-500 mt-1">Сотрудников</div></div>`;
 }
-function renderUsers(){
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  let users=loadUsers();
-  if(_filter==='active')users=users.filter(u=>!u.blocked);
-  if(_filter==='blocked')users=users.filter(u=>u.blocked);
-  if(q)users=users.filter(u=>u.name.toLowerCase().includes(q)||u.username.toLowerCase().includes(q));
-  const c=document.getElementById('usersTable');
-  if(!users.length){c.innerHTML='<div class="text-center text-gray-400 py-12 text-sm">Пользователи не найдены</div>';return;}
-  c.innerHTML=users.map(u=>`
-    <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors ${u.blocked?'row-blocked':''}">
-      <div class="w-9 h-9 rounded-full ${u.blocked?'bg-gray-300':'bg-primary'} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 relative">
+
+const BRANCHES = {'':'—',branch_01:'Chorsu',branch_02:'Alayskiy',branch_03:'Samarqand Darvoza',branch_04:'Yunusobod',branch_05:'Mirobod'};
+
+function renderUsers() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let users = [..._users];
+  if (_filter === 'active') users = users.filter(u => u.state !== 'BLOCKED');
+  if (_filter === 'blocked') users = users.filter(u => u.state === 'BLOCKED');
+  if (q) users = users.filter(u => u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q));
+  const c = document.getElementById('usersTable');
+  if (!users.length) { c.innerHTML = '<div class="text-center text-gray-400 py-12 text-sm">Сотрудники не найдены</div>'; return; }
+  c.innerHTML = users.map(u => `
+    <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors ${u.state==='BLOCKED'?'row-blocked':''}">
+      <div class="w-9 h-9 rounded-full ${u.state==='BLOCKED'?'bg-gray-300':'bg-primary'} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 relative">
         ${u.name.split(' ').map(w=>w[0]).slice(0,2).join('')}
-        ${u.blocked?'<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>':''}
+        ${u.state==='BLOCKED'?'<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>':''}
       </div>
       <div class="flex-1 min-w-0">
         <div class="font-medium text-gray-800 text-sm flex items-center gap-2 flex-wrap">
           ${u.name}
-          ${u.blocked?'<span class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">заблокирован</span>':''}
+          ${u.state==='BLOCKED'?'<span class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">заблокирован</span>':''}
         </div>
-        <div class="text-xs text-gray-400">${BRANCHES[u.branch||'']||'—'}</div>
+        <div class="text-xs text-gray-400">${BRANCHES[u.branchId||'']||'—'}</div>
       </div>
       <span class="hidden sm:inline badge-${u.role} text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0">${ROLES[u.role]||u.role}</span>
       <span class="hidden md:inline font-mono text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded flex-shrink-0">${u.username}</span>
-      <span class="text-xs text-gray-400 hidden lg:inline flex-shrink-0">${u.createdAt||''}</span>
       <div class="flex items-center gap-1 flex-shrink-0">
-        <button onclick="showCreds('${u.id}')" title="Данные для входа" class="text-gray-400 hover:text-primary p-1.5 rounded hover:bg-indigo-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-        <button onclick="showModal('${u.id}')" title="Редактировать" class="text-gray-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-        ${u.blocked
-          ?`<button onclick="toggleBlock('${u.id}',false)" title="Разблокировать" class="text-green-500 hover:text-green-700 p-1.5 rounded hover:bg-green-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg></button>`
-          :`<button onclick="confirmBlock('${u.id}')" title="Заблокировать" class="text-gray-400 hover:text-orange-500 p-1.5 rounded hover:bg-orange-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zM10 11V7a2 2 0 014 0v4"/></svg></button>`}
-        <button onclick="confirmDelete('${u.id}')" title="Удалить" class="text-gray-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        ${u.role !== 'founder' ? `
+          <button onclick="showEditRole('${u.id}')" title="Изменить роль" class="text-gray-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
+          ${u.state==='BLOCKED'
+            ?`<button onclick="unblockUser('${u.id}','${u.name}')" title="Разблокировать" class="text-green-500 hover:text-green-700 p-1.5 rounded hover:bg-green-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg></button>`
+            :`<button onclick="blockUser('${u.id}','${u.name}')" title="Заблокировать" class="text-gray-400 hover:text-orange-500 p-1.5 rounded hover:bg-orange-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zM10 11V7a2 2 0 014 0v4"/></svg></button>`}
+          <button onclick="resetPwd('${u.id}','${u.name}')" title="Сбросить пароль" class="text-gray-400 hover:text-indigo-500 p-1.5 rounded hover:bg-indigo-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg></button>
+        ` : ''}
       </div>
     </div>`).join('');
 }
 
-let _editId=null,_pendingCreds=null;
-function showModal(id){
-  _editId=id||null;
-  document.getElementById('modalTitle').textContent=id?'Редактировать пользователя':'Создать пользователя';
+// ---- CREATE USER ----
+function showCreateModal(id) {
+  _editId = id || null;
+  document.getElementById('modalTitle').textContent = id ? 'Редактировать роль' : 'Добавить сотрудника';
   document.getElementById('modalError').classList.add('hidden');
-  if(id){const u=loadUsers().find(x=>x.id===id);if(u){document.getElementById('fName').value=u.name;document.getElementById('fUsername').value=u.username;document.getElementById('fPassword').value=u.password;document.getElementById('fRole').value=u.role;document.getElementById('fBranch').value=u.branch||'';}}
-  else{['fName','fUsername','fPassword'].forEach(i=>document.getElementById(i).value='');document.getElementById('fRole').value='';document.getElementById('fBranch').value='';}
-  document.getElementById('modal').classList.remove('hidden');
-  setTimeout(()=>document.getElementById('fName').focus(),100);
+  document.getElementById('modalSuccess').classList.add('hidden');
+  if (!id) { ['fName','fUsername','fPassword'].forEach(i=>document.getElementById(i).value=''); document.getElementById('fRole').value=''; document.getElementById('fBranch').value=''; }
+  else {
+    const u = _users.find(x=>x.id===id);
+    if (u) { document.getElementById('fName').value=u.name; document.getElementById('fUsername').value=u.username; document.getElementById('fPassword').value=''; document.getElementById('fRole').value=u.role; document.getElementById('fBranch').value=u.branchId||''; }
+    ['fName','fUsername','fPassword'].forEach(i=>{document.getElementById(i).disabled=true;});
+  }
+  document.getElementById('createModal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById(_editId?'fRole':'fName').focus(),100);
 }
-function hideModal(){document.getElementById('modal').classList.add('hidden');}
-function generatePass(){const c='abcdefghijkmnpqrstuvwxyz23456789';const p=Array.from({length:7},()=>c[Math.floor(Math.random()*c.length)]).join('');document.getElementById('fPassword').value=p.charAt(0).toUpperCase()+p.slice(1)+'!';}
-function saveUser(){
-  const name=document.getElementById('fName').value.trim();
-  const username=document.getElementById('fUsername').value.trim().toLowerCase();
-  const password=document.getElementById('fPassword').value.trim();
-  const role=document.getElementById('fRole').value;
-  const branch=document.getElementById('fBranch').value;
-  const errEl=document.getElementById('modalError');
+function hideCreateModal() {
+  document.getElementById('createModal').classList.add('hidden');
+  ['fName','fUsername','fPassword'].forEach(i=>{document.getElementById(i).disabled=false;});
+}
+
+function genPass() {
+  const c='abcdefghijkmnpqrstuvwxyz23456789';
+  const p=Array.from({length:7},()=>c[Math.floor(Math.random()*c.length)]).join('');
+  document.getElementById('fPassword').value=p.charAt(0).toUpperCase()+p.slice(1)+'!';
+}
+
+async function saveUser() {
+  const name = document.getElementById('fName').value.trim();
+  const username = document.getElementById('fUsername').value.trim().toLowerCase();
+  const password = document.getElementById('fPassword').value.trim();
+  const role = document.getElementById('fRole').value;
+  const branchId = document.getElementById('fBranch').value;
+  const errEl = document.getElementById('modalError');
+  const btn = document.getElementById('saveBtn');
   errEl.classList.add('hidden');
-  if(!name||!username||!password||!role){errEl.textContent='Заполните все обязательные поля';errEl.classList.remove('hidden');return;}
-  if(password.length<6){errEl.textContent='Пароль минимум 6 символов';errEl.classList.remove('hidden');return;}
-  const users=loadUsers();
-  if(users.find(u=>u.username===username&&u.id!==_editId)){errEl.textContent='Этот логин уже занят';errEl.classList.remove('hidden');return;}
-  const today=new Date().toISOString().split('T')[0];
-  if(_editId){const i=users.findIndex(u=>u.id===_editId);if(i!==-1)users[i]={...users[i],name,username,password,role,branch};}
-  else{users.push({id:'usr_'+Date.now(),name,username,password,role,branch,blocked:false,createdAt:today});_pendingCreds={name,role:ROLES[role],username,password,branch:BRANCHES[branch]||'—'};}
-  saveUsers(users);hideModal();renderStats();renderUsers();
-  if(!_editId&&_pendingCreds){showCredsData(_pendingCreds);_pendingCreds=null;}
-  _editId=null;
+
+  if (_editId) {
+    if (!role) { errEl.textContent='Выберите роль'; errEl.classList.remove('hidden'); return; }
+    btn.innerHTML='<div class="spinner"></div>'; btn.disabled=true;
+    try {
+      await apiCall('PATCH', `/users/${_editId}/role`, { role, branchId });
+      await loadUsers();
+      hideCreateModal();
+    } catch(e) { errEl.textContent=e.message; errEl.classList.remove('hidden'); }
+    finally { btn.innerHTML='Сохранить'; btn.disabled=false; }
+    return;
+  }
+
+  if (!name || !username || !password || !role) { errEl.textContent='Заполните все обязательные поля'; errEl.classList.remove('hidden'); return; }
+  if (password.length < 6) { errEl.textContent='Пароль минимум 6 символов'; errEl.classList.remove('hidden'); return; }
+
+  btn.innerHTML='<div class="spinner"></div>'; btn.disabled=true;
+  try {
+    const data = await apiCall('POST', '/users', { name, username, password, role, branchId });
+    _savingCreds = { name, role: ROLES[role]||role, login: username, password };
+    await loadUsers();
+    hideCreateModal();
+    showCredsModal();
+  } catch(e) { errEl.textContent=e.message; errEl.classList.remove('hidden'); }
+  finally { btn.innerHTML='Сохранить'; btn.disabled=false; }
 }
-function confirmBlock(id){const u=loadUsers().find(x=>x.id===id);showConfirm(`Заблокировать ${u?.name}?`,'Пользователь не сможет войти в приложение.','Заблокировать','bg-orange-500 hover:bg-orange-600',()=>toggleBlock(id,true));}
-function toggleBlock(id,blocked){const users=loadUsers();const i=users.findIndex(u=>u.id===id);if(i!==-1)users[i].blocked=blocked;saveUsers(users);renderStats();renderUsers();}
-function confirmDelete(id){const u=loadUsers().find(x=>x.id===id);showConfirm(`Удалить ${u?.name}?`,'Это действие необратимо.','Удалить','bg-red-500 hover:bg-red-600',()=>{saveUsers(loadUsers().filter(u=>u.id!==id));renderStats();renderUsers();});}
-let _confirmCb=null;
-function showConfirm(title,text,label,cls,cb){document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmText').textContent=text;const btn=document.getElementById('confirmBtn');btn.textContent=label;btn.className=`flex-1 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${cls}`;_confirmCb=cb;document.getElementById('confirmModal').classList.remove('hidden');}
-function hideConfirm(){document.getElementById('confirmModal').classList.add('hidden');_confirmCb=null;}
-document.getElementById('confirmBtn').onclick=()=>{if(_confirmCb)_confirmCb();hideConfirm();};
-document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('confirmModal'))hideConfirm();});
-let _currentCreds=null;
-function showCreds(id){const u=loadUsers().find(x=>x.id===id);if(!u)return;showCredsData({name:u.name,role:ROLES[u.role]||u.role,username:u.username,password:u.password,branch:BRANCHES[u.branch||'']||'—'});}
-function showCredsData(d){
-  _currentCreds=d;
-  document.getElementById('cName').textContent=d.name;document.getElementById('cRole').textContent=d.role;document.getElementById('cBranch').textContent=d.branch;document.getElementById('cLogin').textContent=d.username;document.getElementById('cPass').textContent=d.password;
-  document.getElementById('copyBtn').innerHTML='<svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Скопировать';
-  document.getElementById('credsModal').classList.remove('hidden');
-}
-function hideCredsModal(){document.getElementById('credsModal').classList.add('hidden');_currentCreds=null;}
-function copyCredentials(){
-  if(!_currentCreds)return;
-  navigator.clipboard.writeText(`Ombor Tizimi\nИмя: ${_currentCreds.name}\nРоль: ${_currentCreds.role}\nФилиал: ${_currentCreds.branch}\nЛогин: ${_currentCreds.username}\nПароль: ${_currentCreds.password}`).then(()=>{
-    document.getElementById('copyBtn').textContent='✓ Скопировано!';
-    setTimeout(()=>{document.getElementById('copyBtn').innerHTML='<svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Скопировать';},2000);
+
+// ---- EDIT ROLE ----
+function showEditRole(id) { showCreateModal(id); }
+
+// ---- BLOCK/UNBLOCK ----
+function blockUser(id, name) {
+  showConfirm(`Заблокировать ${name}?`, 'Пользователь не сможет войти в приложение.', 'Заблокировать', 'bg-orange-500 hover:bg-orange-600', async () => {
+    await apiCall('PATCH', `/users/${id}/block`); await loadUsers();
   });
 }
-['modal','credsModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.add('hidden');});});
-if(isLoggedIn())showMain();
+function unblockUser(id, name) {
+  showConfirm(`Разблокировать ${name}?`, 'Пользователь снова сможет войти.', 'Разблокировать', 'bg-green-500 hover:bg-green-600', async () => {
+    await apiCall('PATCH', `/users/${id}/unblock`); await loadUsers();
+  });
+}
+
+// ---- RESET PASSWORD ----
+function resetPwd(id, name) {
+  const newPwd = prompt(`Новый пароль для ${name} (мин. 6 символов):`);
+  if (!newPwd || newPwd.length < 6) { alert('Пароль слишком короткий'); return; }
+  apiCall('PATCH', `/users/${id}/password`, { newPassword: newPwd })
+    .then(() => { alert(`✅ Пароль для ${name} изменён`); })
+    .catch(e => alert('Ошибка: ' + e.message));
+}
+
+// ---- CREDENTIALS MODAL ----
+function showCredsModal() {
+  if (!_savingCreds) return;
+  document.getElementById('cName').textContent = _savingCreds.name;
+  document.getElementById('cRole').textContent = _savingCreds.role;
+  document.getElementById('cLogin').textContent = _savingCreds.login;
+  document.getElementById('cPass').textContent = _savingCreds.password;
+  document.getElementById('credsModal').classList.remove('hidden');
+}
+function hideCredsModal() { document.getElementById('credsModal').classList.add('hidden'); _savingCreds = null; }
+function copyCreds() {
+  if (!_savingCreds) return;
+  const t = `Ombor Tizimi — данные для входа\nИмя: ${_savingCreds.name}\nРоль: ${_savingCreds.role}\nЛогин: ${_savingCreds.login}\nПароль: ${_savingCreds.password}\nСервер: 15.164.220.51`;
+  navigator.clipboard.writeText(t).then(() => { document.getElementById('copyCredsBtn').textContent = '✅ Скопировано!'; setTimeout(() => { document.getElementById('copyCredsBtn').innerHTML = '📋 Скопировать данные'; }, 2000); });
+}
+
+// ---- CONFIRM ----
+let _cb = null;
+function showConfirm(title, text, label, cls, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmText').textContent = text;
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = label; btn.className = `flex-1 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${cls}`;
+  _cb = cb; document.getElementById('confirmModal').classList.remove('hidden');
+}
+function hideConfirm() { document.getElementById('confirmModal').classList.add('hidden'); _cb = null; }
+document.getElementById('confirmBtn').onclick = async () => { if (_cb) { try { await _cb(); } catch(e) { alert(e.message); } } hideConfirm(); };
+['confirmModal','credsModal','createModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) document.getElementById(id).classList.add('hidden'); });
+});
+
+// ---- INIT ----
+const savedToken = sessionStorage.getItem('admin_token');
+const savedUser = sessionStorage.getItem('admin_user');
+if (savedToken && savedUser) {
+  _token = savedToken;
+  _currentUser = JSON.parse(savedUser);
+  if (['founder','admin'].includes(_currentUser.role)) { showMain(); }
+}
 </script>
 </body>
 </html>
